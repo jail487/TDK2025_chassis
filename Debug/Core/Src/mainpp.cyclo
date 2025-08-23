@@ -1,0 +1,5 @@
+../Core/Src/mainpp.cpp:48:6:void setup()	1
+../Core/Src/mainpp.cpp:62:6:void loop()	1
+../Core/Src/mainpp.cpp:68:6:void main_function()	1
+../Core/Src/mainpp.cpp:83:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	3
+../Core/Src/mainpp.cpp:102:6:void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef*)	3

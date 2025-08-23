@@ -1,0 +1,3 @@
+../location/script.cpp:18:6:void stage_1()	2
+../location/script.cpp:26:6:void set_coffee_table(int)	18
+../location/script.cpp:80:6:void stage_2()	3

@@ -1,0 +1,6 @@
+../Motor/DC_motor.h:26:2:DC_motor::DC_motor(TIM_HandleTypeDef*, GPIO_TypeDef*, uint16_t, TIM_HandleTypeDef*, uint32_t, float, float, bool)	1
+../location/VL53.h:15:5:VL53L0X::VL53L0X(GPIO_TypeDef*, uint16_t, int)	1
+../Lifter/lifter.cpp:27:6:void lifter_setup()	1
+../Lifter/lifter.cpp:37:6:void lifter_measuredistance()	1
+../Lifter/lifter.cpp:40:1:void __static_initialization_and_destruction_0()	1
+../Lifter/lifter.cpp:40:1:cpp)	1

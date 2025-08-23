@@ -1,0 +1,26 @@
+C:\ST\STM32CubeIDE_1.18.1\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344\tools\bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/include/c++/13.3.1/cmath:146:3:constexpr float std::atan2(float, float)	16	static
+C:\ST\STM32CubeIDE_1.18.1\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344\tools\bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/include/c++/13.3.1/cmath:177:3:constexpr float std::cos(float)	16	static
+C:\ST\STM32CubeIDE_1.18.1\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344\tools\bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/include/c++/13.3.1/cmath:234:3:constexpr float std::fabs(float)	16	static
+C:\ST\STM32CubeIDE_1.18.1\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344\tools\bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/include/c++/13.3.1/cmath:400:3:constexpr float std::sin(float)	16	static
+C:\ST\STM32CubeIDE_1.18.1\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344\tools\bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/include/c++/13.3.1/cmath:438:3:constexpr float std::sqrt(float)	16	static
+../location/location.cpp:64:6:void set_move_mode(int)	16	static
+../location/location.cpp:68:6:bool achieve()	4	static
+../location/location.cpp:73:6:bool ach()	4	static
+../location/location.cpp:79:6:bool mission_complete()	4	static
+../location/location.cpp:85:6:bool arrive_destination()	8	static
+../location/location.cpp:94:6:void stop()	8	static
+../location/location.cpp:98:6:void move_mode(int)	16	static
+../location/location.cpp:124:6:void integral_move()	72	static
+../location/location.cpp:170:6:void followPath(int)	16	static
+../location/location.cpp:174:6:void path_moveDis(float, int)	32	static
+../location/location.cpp:191:6:void direct_move(int)	16	static
+../location/location.cpp:227:6:void directMove_findLine(int, int)	16	static
+../location/location.cpp:238:6:void direct_moveDistance(int)	32	static
+../location/location.cpp:305:6:void path_findLine(int, int)	16	static
+../location/location.cpp:316:6:void direct_move_find_line(int, int)	16	static
+../location/location.cpp:327:6:void integral_move_to(float, float, float)	24	static
+../location/location.cpp:336:6:void setPath_distance(float, int)	16	static
+../location/location.cpp:347:6:void set_directMove_findLine(int, int)	16	static
+../location/location.cpp:356:6:void set_directMove(int, float, float)	24	static
+../location/location.cpp:368:6:void setPath_finding_line(int, int)	16	static
+../location/location.cpp:376:6:void chassis_move()	8	static

@@ -1,0 +1,2 @@
+../location/VL53.cpp:49:6:void VL53L0X::Init()	32	static
+../location/VL53.cpp:114:6:void VL53L0X::Update()	16	static
