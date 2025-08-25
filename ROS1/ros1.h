@@ -14,17 +14,18 @@
 #include "std_msgs/Bool.h"
 
 namespace ROS1 {
-	void init(void);
-	void spinCycle(void);
+    void init(void);
+    void spinCycle(void);
 
-	void pub_chassis_speed(void);
+    // STM Publishers
+    void pub_arrive_destination();
+    void pub_receive_speed_cmd();
 
-	void callback_Chassis(const geometry_msgs::Twist &msg);
-	void callback_Intake(const std_msgs::Bool &msg);
-	void callback_Elevator(const std_msgs::Int32 &msg);
-	void callback_ElevatorDoor(const std_msgs::Bool &msg);
-	void callback_BasketDoor(const std_msgs::Bool &msg);
+    // STM Subscribers
+    void callback_Chassis(const geometry_msgs::Twist &msg);
+    void callback_missonFinish(const std_msgs::Bool &msg);
+    void callback_coffeeTable(const std_msgs::Int32 &msg);
+    void callback_CupColor(const std_msgs::Int32 &msg);
 }
-
 
 #endif

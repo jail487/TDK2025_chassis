@@ -85,7 +85,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*htim){
 	if (htim -> Instance == TIM6){
 //		chassis_move();
 		path(path_dir);
-		//ROS1::spinCycle();
+		////ROS1::spinCycle();
 		//path(path_dir);
 		chassis_update_speed(cmd_v_x,cmd_v_y,cmd_v_w);
 		//move_mode();

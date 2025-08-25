@@ -11,7 +11,7 @@
 #include "stm32h7xx_hal.h"
 
 int s = 0;
-int coffee_table = 1;
+int coffee_table = 1, cup_color = 0; // coffee_table: 1~4, cup_color: 1~2
 
 bool side = 0; // 0: left, 1: right 
 

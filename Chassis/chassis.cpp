@@ -67,10 +67,10 @@ void mecan_IK_transform(float _v_x, float _v_y, float _v_w) {
     float v4 = -_v_x + _v_y - _v_w * a / 2.0f; // Back Left
 
     // Convert linear speed (cm/s) to angular speed (rad/s)
-    float w1 = v1 / r;
-    float w2 = v2 / r;
-    float w3 = v3 / r;
-    float w4 = v4 / r;
+    float w1 = v1 / r / pi;
+    float w2 = v2 / r / pi;
+    float w3 = v3 / r / pi;
+    float w4 = v4 / r / pi;
 
     wheel_FR.setspeed(w1);
     wheel_FL.setspeed(w2);

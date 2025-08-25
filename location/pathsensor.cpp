@@ -16,8 +16,8 @@ extern float map_x, map_y, last_x, last_y;
 extern float cmd_v_x, cmd_v_y, cmd_v_w;
 extern bool arrive;
 
-int normal_Speed = 5;
-#define w_kp 0.08
+int normal_Speed = 16;
+#define w_kp 0.4
 #define w_kd 0
 #define boundry 2000
 #define spin_sp 10
@@ -86,7 +86,7 @@ void weight(int dir) {//0:front,1:back,2:right,3:,left
 
 				// For mecanum: output chassis velocity vector
 	cmd_v_y = 0; // Forward speed (positive: forward)
-	cmd_v_x = -normal_Speed;            // No strafe (add logic here if you want to strafe)
+	cmd_v_x = normal_Speed;            // No strafe (add logic here if you want to strafe)
 	cmd_v_w = (weight_err * w_kp + weight_change * w_kd); // Rotation correction
 
 	}
