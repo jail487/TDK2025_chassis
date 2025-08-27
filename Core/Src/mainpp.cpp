@@ -9,7 +9,7 @@
 #include "mainpp.h"
 #include "ROS1.h"
 #include "pathsensor.h"
-#include "location.h"
+#include "chassis_move.h"
 #include "script.h"
 #include "DC_motor.h"
 #include "chassis.h"

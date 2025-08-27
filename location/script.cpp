@@ -5,7 +5,7 @@
  *      Author: 88698
  */
 #include "script.h"
-#include "location.h"
+#include "chassis_move.h"
 #include "chassis.h"
 #include "pathsensor.h"
 #include "stm32h7xx_hal.h"
@@ -88,6 +88,18 @@ void stage_2() {
     //setPath_finding_line(4, 1);// Follow back path till find front and left line
     set_directMove_findLine(4,1);// direct move back till find front and right line
     set_coffee_table(coffee_table);// Place the coffee cup based on the coffee table number
+}
+
+
+void stage_4() {
+    if ( side == 0 ) {
+        // left
+
+    }
+    else {
+        // right
+
+    }
 }
 
 
