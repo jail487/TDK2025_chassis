@@ -17,7 +17,7 @@
            |
           -90
  */
-#include "location.h"
+#include "chassis_move.h"
 //#include "motor.h"
 #include "pathSensor.h"
 #include "chassis.h"
@@ -27,15 +27,22 @@
 
 #define pi 3.14159
 
-extern float path_dis, path_motor_speed[2];
-extern float map_x,map_y,theta;
-extern uint32_t adcRead[7];
 
+// the following variables are extern in chassis_move.h and initialized here
+float path_dis = 0; // Distance to follow the path
+float path_motor_speed[2] = {0.0, 0.0};
+bool achieve_flag = false;
+int path_dir = 0; // Direction for path following, default is 0 (forward)
+
+
+
+
+
+// the following variables are global variables used in this .cpp
 float goal_x = 0, goal_y = 0, goal_theta = 0;
 float last_x = 0, last_y = 0, last_theta = 0;
 
 int move_mode_flag = 0; // 0: move to a point, 1: move straight, 2: follow path for a distance, 3: follow path
-bool achieve_flag = false;
 bool mission_flag = false;
 
 float pos_threshold = 0.1; // Threshold for position accuracy
@@ -50,17 +57,15 @@ float travel_distance = 0; // Distance traveled since the last update
 
 int dir = 0; // Direction for direct move, default is 0 (forward)
 
-float path_dis = 0; // Distance to follow the path
-
 int line_type = 0;
-int path_dir = 0; // Direction for path following, default is 0 (forward)
+
 
 int start_x,start_y,start_theta; // Starting position and orientation for path following
 
-int cmd_v_x,cmd_v_y,cmd_v_w;
 
 int move_dir;
 int ach_check;
+
 void set_move_mode(int mode){
     move_mode_flag = mode;
 }
@@ -101,7 +106,7 @@ void move_mode(int mode) {
             stop();
             break;
         case 1: // move to a point without integral control
-            integral_move_to(goal_x, goal_y, goal_theta * 180 / pi);//
+            integral_move(goal_x, goal_y, goal_theta * 180 / pi);//
             break;
         case 2: // follow path for a distance
             path_moveDis(path_dis, path_dir);
@@ -167,6 +172,86 @@ void integral_move(){
     }
 }
 
+void integral_move_w_const_v( bool side, float T ) {
+    const float const_v = 2.0 * pi * 50.0 / T;
+    if ( side == 0 ) {
+        // left
+        goal_x = -160; goal_y = -70; goal_theta = pi * 3 / 2;
+        chassis_update_speed( -1 * const_v, 0, 0);
+    }
+    else {
+        goal_x = 160; goal_y = -70; goal_theta = pi * 3 / 2;
+        chassis_update_speed( const_v, 0, 0);
+    }
+    while ( arrive_destination() == false ) {}
+}
+
+
+void integral_move_w_decel( bool side, float T ) {
+    float direction = 0.0;
+    float decel_rate = 0.9;
+    if ( side == 0 ) {
+        // left
+        direction = -1.0;
+        goal_x = -60; goal_y = 175; goal_theta = pi / 2;
+    }
+    else {
+        direction = 1.0;
+        goal_x = 60; goal_y = 175; goal_theta = pi / 2;
+    }
+
+    float v = 2*pi*60/T, v_final = 2*pi*50/T;
+    while ( arrive_destination() == false ) {
+        chassis_update_speed( v * direction, 0, 0 );
+        if ( v > v_final ) {
+            v -= decel_rate;
+        }
+    }
+
+
+}
+void circular_move( bool side, int step, float T ) {
+    // direction == 1 if ccw, else -1
+    float omega = 2 * pi / T;
+    float radius = 1000.0;
+    int direction = 0;
+
+    if ( side == 0 ) {
+        // left 
+        if ( step == 1 ) {
+            goal_x = -60; goal_y = 60; goal_theta = pi / 2;
+            radius = 60; direction = -1;
+        }
+        else if ( step == 2 ) {
+            goal_x = -160; goal_y = 175; goal_theta = pi * 3 / 2;
+            radius = 50; direction = 1;
+        }
+        else if ( step == 3 ) {
+            goal_x = -260; goal_y = -70; goal_theta = pi / 2;
+            radius = 50; direction = -1;
+        }
+    }
+    else {
+        // right
+        if ( step == 1 ) {
+            goal_x = 60; goal_y = 60; goal_theta = pi / 2;
+            radius = 60; direction = 1;
+        }
+        else if ( step == 2 ) {
+            goal_x = 160; goal_y = 175; goal_theta = pi * 3 / 2;
+            radius = 50; direction = -1;
+        }
+        else if ( step == 3 ) {
+            goal_x = 260; goal_y = -70; goal_theta = pi / 2;
+            radius = 50; direction = 1;
+        }
+    }
+    chassis_update_speed( direction * radius * omega, 0, direction * omega);
+    while (arrive_destination() == false ) { }
+
+}
+
+
 void followPath(int path_dir) { // follow path for mecanum chassis
         weight(path_dir); // sets cmd_v_y, cmd_v_x, cmd_v_w
 }
@@ -175,10 +260,10 @@ void path_moveDis(float path_distance,int _path_dir) {
     path_dir = _path_dir; // Set the direction for path following
     float dx = map_x - start_x;
     float dy = map_y - start_y;
-    float travel_distance = sqrtf(dx * dx + dy * dy);
-    if (travel_distance <= path_distance) {
+    float travel_distance_ = sqrtf(dx * dx + dy * dy);
+    if (travel_distance_ <= path_distance) {
         followPath(_path_dir); // Follow the path
-        travel_distance += sqrtf(dx * dx + dy * dy); // Fixed incomplete statement
+        travel_distance_ += sqrtf(dx * dx + dy * dy); // Fixed incomplete statement
         return;
     }
     else {
@@ -240,12 +325,12 @@ void direct_moveDistance(int direction) {
     //float spin = 0.1;     // Set a constant spin rate
     float dx = map_x - start_x;
     float dy = map_y - start_y;
-    float travel_distance = sqrtf(dx * dx + dy * dy);
+    float travel_distance_ = sqrtf(dx * dx + dy * dy);
     float dtheta = fabs(theta - start_theta);
 
     switch (direction) {
         case 0: // Move forward
-            if (travel_distance <= distance) {
+            if (travel_distance_ <= distance) {
                 direct_move(dir);
                 return;
             } else {
@@ -254,7 +339,7 @@ void direct_moveDistance(int direction) {
             }
             break;
         case 1: // Move backward
-            if (travel_distance <= distance) {
+            if (travel_distance_ <= distance) {
                 direct_move(dir);
                 return;
             } else {
@@ -263,7 +348,7 @@ void direct_moveDistance(int direction) {
             }
             break;
         case 2: // Move right
-            if (travel_distance <= distance) {
+            if (travel_distance_ <= distance) {
                 direct_move(dir);
                 return;
             } else {
@@ -272,7 +357,7 @@ void direct_moveDistance(int direction) {
             }
             break;
         case 3: // Move left
-            if (travel_distance <= distance) {
+            if (travel_distance_ <= distance) {
                 direct_move(dir);
                 return;
             } else {

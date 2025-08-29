@@ -1,12 +1,12 @@
 /*
- * location.h
+ * chassis_move.h
  *
  *  Created on: Sep 2, 2024
  *      Author: mac
  */
 
-#ifndef INC_LOCATION_H_
-#define INC_LOCATION_H_
+#ifndef INC_CHASSIS_MOVE_H_
+#define INC_CHASSIS_MOVE_H_
 
 #include "DC_motor.h"
 #include "pathsensor.h"
@@ -33,9 +33,12 @@ void directMove_findLine(int _dir, int _line_type);
 void direct_moveDistance(int direction);
 void path_findLine(int line_type,int _path_dir);
 void direct_move_find_line(int line_type, int direction);
+void circular_move( bool side, int step, float T);
 
 //update move mode
 void integral_move_to (float x,float y,float w);
+void integral_move_w_const_v( bool side, float T);
+void integral_move_w_decel( bool side, float T );
 void setPath_distance(float path_distance,int _path_dir);
 void set_directMove_findLine(int _line_type, int _dir);
 void set_directMove(int direction, float _distance, float _angle);
@@ -45,6 +48,10 @@ void chassis_move();
 
 
 
+extern float path_dis, path_motor_speed[2];
+extern uint32_t adcRead[7];
+extern bool achieve_flag;
+extern int path_dir;
 
 
 
