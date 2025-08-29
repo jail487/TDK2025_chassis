@@ -10,6 +10,8 @@
 #include "pathsensor.h"
 #include "stm32h7xx_hal.h"
 
+#define pi 3.14159
+
 int s = 0;
 int coffee_table = 1, cup_color = 0; // coffee_table: 1~4, cup_color: 1~2
 
@@ -92,13 +94,25 @@ void stage_2() {
 
 
 void stage_4() {
+    float T = 15.0; // modify T to adjust speed
+    float decel_rate;
     if ( side == 0 ) {
         // left
-
+        circular_move(side, 1, T);
+        integral_move_w_decel(side, T);
+        circular_move(side, 2, T);
+        integral_move_w_const_v(side, T);
+        circular_move(side, 3, T);
     }
     else {
         // right
-
+        // first a circular
+        circular_move(side, 1, T);
+        // linear move w decelerate (r 60 to r 50)
+        integral_move_w_decel(side, T);    
+        circular_move(side, 2, T);
+        integral_move_w_const_v(side, T);
+        circular_move(side, 3, T);
     }
 }
 

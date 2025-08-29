@@ -24,11 +24,9 @@ extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim13;
 
-extern float cmd_v_x,cmd_v_y ,cmd_v_w ;
 int ms = 0;
 int test = 1;
 
-extern int path_dir;
 
 extern int count;
 
@@ -86,7 +84,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*htim){
 //		chassis_move();
 		path(path_dir);
 		////ROS1::spinCycle();
-		//path(path_dir);
 		chassis_update_speed(cmd_v_x,cmd_v_y,cmd_v_w);
 		//move_mode();
 		ms++;

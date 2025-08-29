@@ -7,13 +7,12 @@
 #include "pathsensor.h"
 #include "chassis_move.h"
 #include "script.h"
+#include "chassis.h"
 #include "stm32h7xx_hal.h"
 
 extern ADC_HandleTypeDef hadc3;
 extern ADC_HandleTypeDef hadc1;
 extern DMA_HandleTypeDef hdma_adc1;
-extern float map_x, map_y, last_x, last_y;
-extern float cmd_v_x, cmd_v_y, cmd_v_w;
 extern bool arrive;
 
 int normal_Speed = 16;
@@ -30,7 +29,6 @@ float weight_err;
 float weight_lasttime = 0;
 float weight_change = 0;
 float tempSpeed[2];
-float path_motor_speed[2];
 //extern float path_dis ;
 int o = 0;
 /*

@@ -6,13 +6,13 @@
  */
 
 #include "ros.h"
+#include "../location/chassis_move.h" // not sure about the path
 #include <ros1.h>
 #include <chassis.h>
 
-extern float v_x, v_y, v_w, x, y, theta, cmd_v_x, cmd_v_y, cmd_v_w;
+// extern float v_x, v_y, v_w, x, y, theta, cmd_v_x, cmd_v_y, cmd_v_w;
 bool mission_complete = true;
 bool receiveSpeedMode = false;
-extern bool mission_flag, achieve_flag;
 extern int coffee_table, cup_color;
 
 ros::NodeHandle nh;

@@ -22,6 +22,9 @@ void chassis_task();
 
 
 
+extern float map_x, map_y, theta; // global coordinate
+extern float cmd_v_y,cmd_v_x,cmd_v_w;//local speed
+extern float v_x, v_y, v_w;
 
 
 

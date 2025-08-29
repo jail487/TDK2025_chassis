@@ -32,7 +32,7 @@ float pi = 3.1415926;
 float kp =4.8,ki =10;
 float v_x = 0.f,v_y = 0.f,v_w = 0.f;//rps
 float map_x = 0.f,map_y = 0.f,theta = 0.f;//global coordinate
-extern float cmd_v_y,cmd_v_x,cmd_v_w;//local speed
+float cmd_v_y = 0.0, cmd_v_x=0.0, cmd_v_w=0.0;//local speed
 float world_v_y,world_v_x;//local speed
 
 float cmd_w_max = 1.5;
