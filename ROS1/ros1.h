@@ -13,6 +13,8 @@
 #include "std_msgs/Int32.h"
 #include "std_msgs/Bool.h"
 
+#define ROS_PUB_FREQUENCY 10
+
 namespace ROS1 {
     void init(void);
     void spinCycle(void);
@@ -20,6 +22,7 @@ namespace ROS1 {
     // STM Publishers
     void pub_arrive_destination();
     void pub_receive_speed_cmd();
+    void pub_chassis_pose();
 
     // STM Subscribers
     void callback_Chassis(const geometry_msgs::Twist &msg);

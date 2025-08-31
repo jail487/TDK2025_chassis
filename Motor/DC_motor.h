@@ -17,10 +17,12 @@ class DC_motor{
 public:
 	void setup();
 	void PI_run();
-	void update_speed(int sign);
+	void updateSpeed(int sign);
 	float get_speed() const { return speed; } 
 	void setspeed(float target_speed);
 	void set_motor_parameter(float reduction_ratio,int resolution) ;
+	void setPulse(float dutyCycle) ;
+	void setDirection(bool direction) ;
 
 
 	DC_motor(TIM_HandleTypeDef *_enc_htim, GPIO_TypeDef *_dirPort, uint16_t _dirPin, TIM_HandleTypeDef *_PWM_htim,
@@ -48,6 +50,7 @@ private:
 	float reduction_ratio = 64.f;
 	int dir = 0;
 	int arr = 799;
+	int arr_max = 800;
 	bool dir_pin = 0;
 	int pulse = 0;
 	float u = 0.f;

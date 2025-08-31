@@ -35,10 +35,10 @@
 #ifndef ROS_STM32_HARDWARE_H_
 #define ROS_STM32_HARDWARE_H_
 
-#include "stm32H7xx_hal.h"
-#include "stm32H7xx_hal_uart.h"
+#include "stm32h7xx_hal.h"
+#include "stm32h7xx_hal_uart.h"
 
-extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart3;
 
 class STM32Hardware {
   protected:
@@ -55,7 +55,7 @@ class STM32Hardware {
 
   public:
     STM32Hardware():
-      huart(&huart1), rind(0), twind(0), tfind(0){
+      huart(&huart3), rind(0), twind(0), tfind(0){
     }
 
     STM32Hardware(UART_HandleTypeDef *huart_):

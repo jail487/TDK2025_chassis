@@ -52,7 +52,7 @@ void DC_motor::PI_run(){
 void DC_motor::setspeed(float target_speed){
     sp = target_speed;
 }
-void DC_motor::update_speed(int sign){
+void DC_motor::updateSpeed(int sign){
     int16_t enc ;
 	enc = __HAL_TIM_GetCounter(enc_htim);
 	speed = sign*(float)enc /(4*resolution*span*reduction_ratio);
@@ -66,6 +66,37 @@ void DC_motor::setup(){
 void DC_motor::set_motor_parameter(float reduction_ratio,int resolution) {
     this->reduction_ratio = reduction_ratio;
     this->resolution = resolution;
+}
+
+void DC_motor::setPulse(float dutyCycle) {
+    // Ensure dutyCycle is within the valid range (0 to 100%)
+    if (dutyCycle > 100.0f) {
+        dutyCycle = 100.0f;
+    } else if (dutyCycle < 0.0f) {
+        dutyCycle = 0.0f;
+    }
+
+    // Calculate the compare value based on the duty cycle and ARR
+    uint32_t compareValue = static_cast<uint32_t>((dutyCycle / 100.0f) * arr);
+
+    // Set the PWM duty cycle using the HAL macro
+    __HAL_TIM_SET_COMPARE(PWM_htim, PWM_TIM_CHANNEL, compareValue);
+}
+
+void DC_motor::setDirection(bool direction) {
+    if (dir_pin == true) {
+        if (direction) {
+            HAL_GPIO_WritePin(dirPort, dirPin, GPIO_PIN_RESET); // Forward
+        } else {
+            HAL_GPIO_WritePin(dirPort, dirPin, GPIO_PIN_SET);   // Backward
+        }
+    } else {
+        if (direction) {
+            HAL_GPIO_WritePin(dirPort, dirPin, GPIO_PIN_SET);   // Forward
+        } else {
+            HAL_GPIO_WritePin(dirPort, dirPin, GPIO_PIN_RESET); // Backward
+        }
+    }
 }
 
 

@@ -17,7 +17,8 @@ extern float cmd_v_x, cmd_v_y, cmd_v_w;
 extern bool arrive;
 
 int normal_Speed = 16;
-#define w_kp 0.4
+#define w_kp_y 0.4
+#define w_kp_x 0.15
 #define w_kd 0
 #define boundry 2000
 #define spin_sp 10
@@ -65,7 +66,7 @@ void weight(int dir) {//0:front,1:back,2:right,3:,left
     // For mecanum: output chassis velocity vector
     cmd_v_y = normal_Speed; // Forward speed (positive: forward)
     cmd_v_x = 0;            // No strafe (add logic here if you want to strafe)
-    cmd_v_w = (weight_err * w_kp + weight_change * w_kd); // Rotation correction
+    cmd_v_w = (weight_err * w_kp_y + weight_change * w_kd); // Rotation correction
 	}
 	else if(dir == 1){//back
 	weight_err = ((float)(-3*adcRead_ADC3[0] - adcRead_ADC3[1] + adcRead_ADC3[3] + 3*adcRead_ADC3[4]) /
@@ -76,30 +77,30 @@ void weight(int dir) {//0:front,1:back,2:right,3:,left
     // For mecanum: output chassis velocity vector
 	cmd_v_y = -normal_Speed; // Forward speed (positive: forward)
 	cmd_v_x = 0;            // No strafe (add logic here if you want to strafe)
-	cmd_v_w = (weight_err * w_kp + weight_change * w_kd); // Rotation correction
+	cmd_v_w = (weight_err * w_kp_y + weight_change * w_kd); // Rotation correction
 	}
 	else if(dir == 2){//right
-    weight_err = ((float)(-3*adcRead_ADC3[4] - adcRead_ADC3[5] + adcRead_ADC3[6] + 3*adcRead_ADC3[7]) /
-						   (adcRead_ADC3[4] + adcRead_ADC3[5]+ 4096 +adcRead_ADC3[6] + adcRead_ADC3[7]));
+    weight_err = ((float)(-3*adcRead_ADC3[8] - adcRead_ADC3[9] + adcRead_ADC3[10] + 3*adcRead_ADC3[11]) /
+						   (adcRead_ADC3[8] + adcRead_ADC3[9]+ 4096 +adcRead_ADC3[10] + adcRead_ADC3[11]));
 	weight_change = weight_err - weight_lasttime;
 	weight_lasttime = weight_err;
 
 				// For mecanum: output chassis velocity vector
 	cmd_v_y = 0; // Forward speed (positive: forward)
 	cmd_v_x = normal_Speed;            // No strafe (add logic here if you want to strafe)
-	cmd_v_w = (weight_err * w_kp + weight_change * w_kd); // Rotation correction
+	cmd_v_w = (weight_err * w_kp_x + weight_change * w_kd); // Rotation correction
 
 	}
 	else if(dir == 3){//left
-	weight_err = ((float)(-3*adcRead_ADC3[8] - adcRead_ADC3[9] + adcRead_ADC3[10] + 3*adcRead_ADC3[11]) /
-				     (adcRead_ADC3[8] + adcRead_ADC3[9]+ 4096 +adcRead_ADC3[10] + adcRead_ADC3[11]));
+	weight_err = ((float)(-3*adcRead_ADC3[4] - adcRead_ADC3[5] + adcRead_ADC3[6] + 3*adcRead_ADC3[7]) /
+				     (adcRead_ADC3[4] + adcRead_ADC3[5]+ 4096 +adcRead_ADC3[6] + adcRead_ADC3[7]));
 	weight_change = weight_err - weight_lasttime;
 	weight_lasttime = weight_err;
 
 		  // For mecanum: output chassis velocity vector
 	cmd_v_y = 0; // Forward speed (positive: forward)
 	cmd_v_x = -normal_Speed;            // No strafe (add logic here if you want to strafe)
-	cmd_v_w = (weight_err * w_kp + weight_change * w_kd); // Rotation correction
+	cmd_v_w = (weight_err * w_kp_x + weight_change * w_kd); // Rotation correction
 	}
 
 	}
@@ -158,18 +159,18 @@ void path(int dir) { // follow path for mecanum chassis
 //}
 //1:front find line, 2:middle find line, 3:find cross road, 4:find line
 bool line_check(int type){
-	int b = 2000;
+	int b = 1000;
 
 	switch(type){
-    	case 1://left line
-            if(adcRead_ADC3[5] >= b && adcRead_ADC3[6] >= b)
+    	case 1://left and right line
+            if(adcRead_ADC3[5] >= b && adcRead_ADC3[10] >= b)
                 return 1;
             else
                 return 0;
             break; // Note: 'break' after 'return' is redundant but harmless.
 	
-	    case 2:
-            if(adcRead_ADC3[2] >= b && adcRead_ADC3[6] >= b)
+	    case 2:////front and right line
+	    	  if((adcRead_ADC3[1] >= b||adcRead_ADC3[2] >= b) && (adcRead_ADC3[9] >= b||adcRead_ADC3[10] >= b ))
                 return 1;
             else
                 return 0;
@@ -182,13 +183,13 @@ bool line_check(int type){
                 return 0;
             break;
 	    case 4://front and left
-            if(adcRead_ADC3[1] >= b && adcRead_ADC3[2] >= b && adcRead_ADC3[5] >= b && adcRead_ADC3[6] >= b )
+            if((adcRead_ADC3[1] >= b||adcRead_ADC3[2] >= b) && (adcRead_ADC3[5] >= b||adcRead_ADC3[6] >= b ))
                 return 1;
             else
                 return 0;
             break;
-	    case 5://front and right
-            if(adcRead_ADC3[1] >= b && adcRead_ADC3[2] >= b && adcRead_ADC3[9] >= b && adcRead_ADC3[10] >= b)
+	    case 5://left line
+            if(adcRead_ADC3[5] >= b || adcRead_ADC3[6] >= b )
                 return 1;
             else
                 return 0;

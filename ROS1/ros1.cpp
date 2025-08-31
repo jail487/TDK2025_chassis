@@ -9,20 +9,27 @@
 #include <ros1.h>
 #include <chassis.h>
 
-extern float v_x, v_y, v_w, x, y, theta, cmd_v_x, cmd_v_y, cmd_v_w;
+extern float v_x, v_y, v_w, map_x, map_y, theta, cmd_v_x, cmd_v_y, cmd_v_w;
 bool mission_complete = true;
 bool receiveSpeedMode = false;
 extern bool mission_flag, achieve_flag;
 extern int coffee_table, cup_color;
+int ach_stage = 0;
+
+// Rate limiting variables
+static uint32_t last_pose_publish = 0;
+static uint32_t last_destination_publish = 0;
+static uint32_t last_speed_cmd_publish = 0;
+static const uint32_t PUBLISH_INTERVAL_MS = 50; // 20Hz max publishing rate
 
 ros::NodeHandle nh;
 
 /** STM Publishers **/
 //geometry_msgs::Twist chassis_current_speed;
-//geometry_msgs::Pose chassis_current_pose;
-std_msgs::Bool arriveDestination;
+geometry_msgs::Pose chassis_current_pose;
+std_msgs::Int32 arriveDestination;
 std_msgs::Bool receiveSpeedCmd;
-//ros::Publisher pub_chassis("/odometry", &chassis_current_pose);
+ros::Publisher pub_chassis("/odometry", &chassis_current_pose);
 ros::Publisher pub_arriveDestination("/arrive_destination", &arriveDestination);
 ros::Publisher pub_receiveSpeedCmd("/receive_speed_cmd", &receiveSpeedCmd);
 
@@ -46,7 +53,7 @@ namespace ROS1 {
   void init(void) {
     nh.initNode();
 
-    //nh.advertise(pub_chassis);
+    nh.advertise(pub_chassis);
     nh.advertise(pub_arriveDestination);
     nh.advertise(pub_receiveSpeedCmd);
     nh.subscribe(sub_chassis);
@@ -62,7 +69,17 @@ namespace ROS1 {
    * @param void
    */
   void spinCycle(void) {
-    nh.spinOnce();
+    // Limit spinOnce frequency to 50Hz
+      nh.spinOnce();
+    return;
+  }
+
+  void pub_chassis_pose(void){
+      chassis_current_pose.position.x = map_x;
+      chassis_current_pose.position.y = map_y;
+      chassis_current_pose.orientation.w = theta;
+      pub_chassis.publish(&chassis_current_pose);
+
     return;
   }
 
@@ -71,8 +88,10 @@ namespace ROS1 {
    * @param void 
    */
   void pub_arrive_destination() {
-    arriveDestination.data = achieve_flag;
-    pub_arriveDestination.publish(&arriveDestination);
+      arriveDestination.data = ach_stage;
+      pub_arriveDestination.publish(&arriveDestination);
+
+    
     return;
   }
 
@@ -81,8 +100,10 @@ namespace ROS1 {
    * @param void
    */
   void pub_receive_speed_cmd() {
-    receiveSpeedCmd.data = receiveSpeedMode;
-    pub_receiveSpeedCmd.publish(&receiveSpeedCmd);
+      receiveSpeedCmd.data = receiveSpeedMode;
+      pub_receiveSpeedCmd.publish(&receiveSpeedCmd);
+
+    
     return;
   }
 

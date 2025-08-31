@@ -23,10 +23,18 @@ extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim13;
+extern TIM_HandleTypeDef htim14;
+
+extern DC_motor front_lifter,back_lifter;
 
 extern float cmd_v_x,cmd_v_y ,cmd_v_w ;
 int ms = 0;
-int test = 1;
+int ttest = 1;
+
+static int ROS_FREQUENCY_Pose = 0;
+static int ROS_FREQUENCY_Arrive = 0;
+static int ROS_FREQUENCY_SpeedCmd = 0;
+
 
 extern int path_dir;
 
@@ -47,16 +55,17 @@ extern int count;
 
 void setup(){
 	//ros_setup();
-	//path_setup();
-//	ROS1::init();
+	path_setup();
+	ROS1::init();
 	HAL_TIM_Base_Start_IT(&htim7);
 	HAL_TIM_Base_Start_IT(&htim6);
 	HAL_TIM_Base_Start_IT(&htim13);
-	chassis_setup();
-	//lifter_setup();
-	path_setup();
-//	ros_setup();
+	HAL_TIM_Base_Start_IT(&htim14);
+	Chassis::setup();
 
+	//path_setup();
+//	ros_setup();
+	//lifterSetup();
 }
 
 void loop(void)
@@ -67,34 +76,62 @@ void loop(void)
 
 void main_function(){
 	//path_setup();
+
 	setup();
 
 	while(1){
-		//stage_1();
-		//stage_2();
-		//lifter_measuredistance();
+		stage_1();
+		stage_2();
+		break;
+		}
+//		ROS1::spinCycle();
+//		ROS1::hassis_pose();
+
+		//ms++;
+		//measureDpub_arrive_destination();
+//		ROS1::pub_cistance();
+
 
 	}
-}
 
 
 
+extern int ach_stage ;
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*htim){
 
 	if (htim -> Instance == TIM6){
-//		chassis_move();
-		path(path_dir);
-		////ROS1::spinCycle();
-		//path(path_dir);
-		chassis_update_speed(cmd_v_x,cmd_v_y,cmd_v_w);
-		//move_mode();
+
+//		if(ttest){
+		chassis_move();
+//		}else{
+//
+//		path(path_dir);}
+		Chassis::updateSpeed(cmd_v_x,cmd_v_y,cmd_v_w);
+		//Lifter::run();
+//		move_mo。
 		ms++;
 		}
-	if (htim -> Instance == TIM13){
+	else if (htim -> Instance == TIM7){
+		if (++ROS_FREQUENCY_Pose >= ROS_PUB_FREQUENCY) {
+					ROS_FREQUENCY_Pose = 0;
+					ROS1::pub_chassis_pose();
+					ROS1::pub_receive_speed_cmd();
+		
+	}
+}
+	else if (htim -> Instance == TIM14){
+		if (++ROS_FREQUENCY_Arrive >= ROS_PUB_FREQUENCY) {
+					ROS_FREQUENCY_Arrive = 0;
+					ROS1::pub_arrive_destination();
+		}
+	}
+	else if (htim -> Instance == TIM13){
+		ROS1::spinCycle();
+
 	   // path();
 //		lifter_measuredistance();
-	    test++;
+	    //test++;
 	    }
 }
 
@@ -105,6 +142,14 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
 	}
 	if (hadc -> Instance == ADC3){
 		adc3++;
+	}
+}
+
+int ee = 0;
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
+	if(huart->Instance == USART3){
+		ee++;
+		//處理接收到的資料
 	}
 }
 

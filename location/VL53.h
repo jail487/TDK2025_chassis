@@ -5,34 +5,37 @@
  *      Author: jkasl
  */
 
-#ifndef INC_VL53_H_
-#define INC_VL53_H_
+#ifndef VL53_H_
+#define VL53_H_
 
-#include "vl53l0x_api.h" // Make sure to include the API header
+#include "stm32h7xx_hal.h"
+#include "vl53l0x_api.h"
 
 class VL53L0X {
+private:
+    VL53L0X_Dev_t vl53l0x_c;
+    VL53L0X_Dev_t *vl53_dev;
+    uint8_t I2C_Address; // Unique I2C address for the sensor
+    GPIO_TypeDef *XSHUT_Port; // GPIO port for XSHUT pin
+    uint16_t XSHUT_Pin; // GPIO pin for XSHUT
+
+    int RangeResult; // Private member to store the range result
+    VL53L0X_RangingMeasurementData_t RangingData; // Private member to store ranging data
+
 public:
-    VL53L0X(GPIO_TypeDef *TOF_XSHUT_PORT,
-            uint16_t TOF_XSHUT_PIN,
-            int VL53_ADDRESS) {
-        this->TOF_XSHUT_PORT = TOF_XSHUT_PORT;
-        this->TOF_XSHUT_PIN = TOF_XSHUT_PIN;
-        this->VL53_ADDRESS = VL53_ADDRESS;
-    }
+    bool isVL53_InitSuccess;
+
+    // Constructor with proper initialization order
+    VL53L0X(GPIO_TypeDef *port, uint16_t pin, uint8_t address)
+        : XSHUT_Port(port), XSHUT_Pin(pin), I2C_Address(address), isVL53_InitSuccess(false), RangeResult(0) {}
+
     void Init();
     void Update();
 
-private:
-    GPIO_TypeDef *TOF_XSHUT_PORT;  
-    uint16_t TOF_XSHUT_PIN;
-    int VL53_ADDRESS;
-    char isVL53_InitSuccess;
-    int8_t VL53_Status;
-    int VL53_RangeResult;
-    int sub_script;
-    VL53L0X_RangingMeasurementData_t RangingData;
-    VL53L0X_Dev_t vl53l0x_c;
-    VL53L0X_DEV vl53_dev;
+    // Getter method for RangeResult
+    int getRangeResult() const {
+        return RangeResult;
+    }
 };
 
-#endif /* INC_VL53_H_ */
+#endif /* VL53_H_ */

@@ -42,8 +42,9 @@ DC_motor wheel_FR ={&htim2,GPIOG,GPIO_PIN_14,&htim5,TIM_CHANNEL_2,4,20,1};
 DC_motor wheel_BL ={&htim8,GPIOG,GPIO_PIN_15,&htim5,TIM_CHANNEL_3,4.0,20,1};
 DC_motor wheel_BR ={&htim4,GPIOD,GPIO_PIN_15,&htim5,TIM_CHANNEL_4,4,20,1};
 
+namespace Chassis {
 
-void chassis_setup(){
+void setup(){
     wheel_FR.setup();
     wheel_FL.setup();
     wheel_BR.setup();
@@ -116,20 +117,21 @@ void transfer_to_localspeed(){
 	cmd_v_y = (-world_v_x * sin(theta)) + (world_v_y * cos(theta));
 }
 
-void chassis_update_speed(float _v_x,float _v_y,float _v_w){
+void updateSpeed(float _v_x,float _v_y,float _v_w){
     mecan_IK_transform(_v_x,_v_y,_v_w);
     wheel_FR.PI_run();
     wheel_FL.PI_run();
     wheel_BR.PI_run();
     wheel_BL.PI_run();
-    wheel_FR.update_speed(1);
-    wheel_FL.update_speed(-1);
-    wheel_BR.update_speed(1);
-    wheel_BL.update_speed(-1);
+    wheel_FR.updateSpeed(1);
+    wheel_FL.updateSpeed(1);
+    wheel_BR.updateSpeed(1);
+    wheel_BL.updateSpeed(-1);
     mecan_FK_transform();
     localization();
 }
 
+}
 //void chassis_task(){
 ////	if(x<300)cmd_v_x =0.2;
 ////	else if (y>=300)cmd_v_x = 0;
@@ -139,6 +141,8 @@ void chassis_update_speed(float _v_x,float _v_y,float _v_w){
 ////	else if(theta>=20*pi)cmd_v_w = 0;
 //
 //}
+
+
 
 
 
