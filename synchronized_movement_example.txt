@@ -1,0 +1,119 @@
+moveDistance() 同步移動功能 - 使用說明
+==========================================
+
+## 📌 功能改進
+
+### 🔄 **舊版本 vs 新版本**
+
+#### 舊版本（PID角度控制）
+- 線速度：用戶指定
+- 角速度：基於 PID 控制 `angular_velocity = kp_theta * angle_error`
+- 問題：位置和角度可能不同步到達，角度可能提前或延後完成
+
+#### 新版本（同步計算角速度）
+- 線速度：用戶指定（不變）
+- 角速度：**動態計算**，確保位置和角度同時到達目標
+- 優點：精確的時間同步，更平滑的運動軌跡
+
+## ⚙️ **同步角速度計算邏輯**
+
+### 1. 時間估算
+```cpp
+// 根據剩餘距離和當前線速度估算到達時間
+estimated_time_to_goal = remaining_distance / current_linear_speed;
+```
+
+### 2. 角速度計算
+```cpp
+// 計算在估計時間內完成角度旋轉所需的角速度
+synchronized_angular_velocity = angle_error / estimated_time_to_goal;
+```
+
+### 3. 安全限制
+- **最大角速度限制**：防止過快旋轉
+- **最小有效角速度**：確保小角度也能有效旋轉
+- **後備PID控制**：當距離太小或速度太慢時的安全機制
+
+## 🎯 **使用範例**
+
+### 基本同步移動
+```cpp
+// 機器人會在移動1米的同時旋轉90度
+// 到達目標位置時剛好完成旋轉
+setmoveDistance(1.0f, 0.0f, 90.0f, 0.5f, 1); // x=1m, y=0m, 90度, 0.5m/s, 啟用加減速
+```
+
+### 不同場景範例
+```cpp
+// 場景1：直線移動 + 旋轉
+setmoveDistance(2.0f, 0.0f, 180.0f, 0.3f, 1); // 2米直線，同時轉180度
+
+// 場景2：對角線移動 + 小角度調整
+setmoveDistance(1.0f, 1.0f, 45.0f, 0.4f, 1);  // 對角線移動，同時微調角度
+
+// 場景3：純旋轉（距離很小）
+setmoveDistance(0.0f, 0.0f, 90.0f, 0.0f, 1);  // 原地旋轉90度
+```
+
+## 📊 **同步效果比較**
+
+### 舊版本時序
+```
+時間軸: |----1s----|----2s----|----3s----|----4s----|
+位置:   [====移動中====][到達]
+角度:   [==旋轉==][完成]               <- 角度提前完成
+結果:   位置和角度不同步
+```
+
+### 新版本時序
+```
+時間軸: |----1s----|----2s----|----3s----|----4s----|
+位置:   [====移動中====][到達]
+角度:   [====旋轉中====][完成]         <- 同步完成
+結果:   位置和角度完美同步！
+```
+
+## ⚡ **技術細節**
+
+### 動態角速度調整
+- **距離遠 + 角度大**：角速度適中，平滑同步
+- **距離近 + 角度大**：角速度較快，確保及時完成
+- **距離遠 + 角度小**：角速度較慢，避免過早完成
+
+### 安全機制
+```cpp
+// 1. 最大角速度限制
+if (fabs(synchronized_angular_velocity) > max_speed) {
+    synchronized_angular_velocity = (synchronized_angular_velocity > 0) ? 
+        max_speed : -max_speed;
+}
+
+// 2. 最小有效角速度
+if (fabs(angle_error) > theta_threshold && 
+    fabs(synchronized_angular_velocity) < min_effective_angular_velocity) {
+    synchronized_angular_velocity = (angle_error > 0) ? 
+        min_effective_angular_velocity : -min_effective_angular_velocity;
+}
+
+// 3. 後備PID控制
+if (estimated_time_to_goal <= 0.01f) {
+    synchronized_angular_velocity = kp_theta * angle_error * 0.1f;
+}
+```
+
+## 🎉 **優勢總結**
+
+1. **⏰ 精確同步**：位置和角度在同一時刻到達目標
+2. **🎯 運動效率**：無需分步驟，一次性完成位移和旋轉
+3. **🔄 平滑軌跡**：避免了角度提前完成後的等待或補償
+4. **⚡ 適應性強**：自動適應不同的距離和角度組合
+5. **🛡️ 安全可靠**：多重安全限制和後備機制
+
+## 💡 **調試提示**
+
+如果同步效果不理想，可以調整以下參數：
+- `max_speed`：影響最大角速度限制
+- `min_effective_angular_velocity`：影響小角度的處理
+- `theta_threshold`：影響角度完成的精度判斷
+
+現在您的機器人具有了真正的同步移動能力！🚀

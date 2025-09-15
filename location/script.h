@@ -12,6 +12,7 @@
 void script();
 void stage_1();
 void stage_2();
+void testt();
 
 
 

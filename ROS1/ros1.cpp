@@ -8,13 +8,13 @@
 #include "ros.h"
 #include <ros1.h>
 #include <chassis.h>
+#include "location.h"
 
 extern float v_x, v_y, v_w, map_x, map_y, theta, cmd_v_x, cmd_v_y, cmd_v_w;
-bool mission_complete = true;
-bool receiveSpeedMode = false;
 extern bool mission_flag, achieve_flag;
-extern int coffee_table, cup_color;
-int ach_stage = 0;
+extern int coffeTable, cupColor;
+extern int stage ;
+extern float xDis_receive, yDis_receive;
 
 // Rate limiting variables
 static uint32_t last_pose_publish = 0;
@@ -28,10 +28,10 @@ ros::NodeHandle nh;
 //geometry_msgs::Twist chassis_current_speed;
 geometry_msgs::Pose chassis_current_pose;
 std_msgs::Int32 arriveDestination;
-std_msgs::Bool receiveSpeedCmd;
+std_msgs::Int32 currentStage;
 ros::Publisher pub_chassis("/odometry", &chassis_current_pose);
-ros::Publisher pub_arriveDestination("/arrive_destination", &arriveDestination);
-ros::Publisher pub_receiveSpeedCmd("/receive_speed_cmd", &receiveSpeedCmd);
+//ros::Publisher pub_arriveDestination("/arrive_destination", &arriveDestination);
+ros::Publisher pub_currentStage("/current_stage", &currentStage);
 
 /** STM Subscribers **/
 ros::Subscriber<geometry_msgs::Twist> sub_chassis("/cmd_vel", ROS1::callback_Chassis);
@@ -54,16 +54,16 @@ namespace ROS1 {
     nh.initNode();
 
     nh.advertise(pub_chassis);
-    nh.advertise(pub_arriveDestination);
-    nh.advertise(pub_receiveSpeedCmd);
+   // nh.advertise(pub_arriveDestination);
+    nh.advertise(pub_currentStage);
+    
     nh.subscribe(sub_chassis);
     nh.subscribe(sub_missionFinish);
-    //nh.subscribe(sub_elevator);
-    //nh.subscribe(sub_elevatorDoor);
-    //nh.subscribe(sub_basketDoor);
+    nh.subscribe(sub_coffeeTable);
+    nh.subscribe(sub_CupColor);
     return;
   }
-
+int spin  = 0;
   /**
    * @brief ROS1 循環單位。
    * @param void
@@ -71,6 +71,8 @@ namespace ROS1 {
   void spinCycle(void) {
     // Limit spinOnce frequency to 50Hz
       nh.spinOnce();
+      spin++;
+
     return;
   }
 
@@ -79,32 +81,32 @@ namespace ROS1 {
       chassis_current_pose.position.y = map_y;
       chassis_current_pose.orientation.w = theta;
       pub_chassis.publish(&chassis_current_pose);
-
-    return;
+      return;
   }
 
   /**
    * @brief 底盤到達目的地時發送至 ROS 並呼叫任務機構。
    * @param void 
    */
-  void pub_arrive_destination() {
-      arriveDestination.data = ach_stage;
-      pub_arriveDestination.publish(&arriveDestination);
-
-    
-    return;
-  }
+//  void pub_arrive_destination() {
+//      arriveDestination.data = achieve_flag;
+//      pub_arriveDestination.publish(&arriveDestination);
+//      return;
+//  }
 
   /**
    * @brief 底盤切換為接受ROS速度移動模式。
    * @param void
    */
-  void pub_receive_speed_cmd() {
-      receiveSpeedCmd.data = receiveSpeedMode;
-      pub_receiveSpeedCmd.publish(&receiveSpeedCmd);
-
-    
-    return;
+  void pub_current_stage() {
+      if (ach()) {
+        currentStage.data = stage;
+      }
+      else {
+        currentStage.data = 0;
+      }
+      pub_currentStage.publish(&currentStage);
+      return;
   }
 
   /**
@@ -112,10 +114,10 @@ namespace ROS1 {
    * @param geometry_msgs::Twist
    */
   void callback_Chassis(const geometry_msgs::Twist &msg) {
-    cmd_v_x = msg.linear.x;
-    cmd_v_y = msg.linear.y;
-    cmd_v_w = msg.angular.z;
-    return;
+      xDis_receive = msg.linear.x;
+      yDis_receive = msg.linear.y;
+      //cmd_v_w = msg.angular.z;
+      return;
   }
 
   /**
@@ -123,8 +125,8 @@ namespace ROS1 {
    * @param std_msgs::Bool
    */
   void callback_missonFinish(const std_msgs::Bool &msg) {
-    mission_complete = msg.data;
-    return;
+      mission_flag = msg.data;
+      return;
   }
 
   /**
@@ -132,8 +134,8 @@ namespace ROS1 {
    * @param std_msgs::Int32
    */
   void callback_coffeeTable(const std_msgs::Int32 &msg) {
-    coffee_table = msg.data;
-    return;
+      coffeTable = msg.data;
+      return;
   }
 
   /**
@@ -141,8 +143,8 @@ namespace ROS1 {
    * @param std_msgs::Int32
    */
   void callback_CupColor(const std_msgs::Int32 &msg) {
-    cup_color = msg.data;
-    return;
+      cupColor = msg.data;
+      return;
   }
 
 }

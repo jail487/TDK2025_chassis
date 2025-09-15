@@ -1,0 +1,215 @@
+/*
+ * pinpoint_usage_example.cpp
+ * 
+ * 展示如何在主程式中使用 Pinpoint 定位功能
+ * 
+ * Created on: Jan 18, 2025
+ * Author: 88698
+ */
+
+#include "chassis.h"
+#include "main.h"
+#include <stdio.h>
+#include <math.h>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+// 外部變數宣告（在 chassis.cpp 中定義）
+extern float map_x, map_y, theta;
+extern float cmd_v_x, cmd_v_y, cmd_v_w;
+extern float world_v_x, world_v_y;
+
+/* 在你的 main.cpp 或主要程式中的使用範例 */
+
+void pinpoint_example_usage() {
+    
+    // ========== 初始化 ==========
+    printf("Starting chassis initialization...\n");
+    
+    // 初始化所有底盤元件（包括 Pinpoint）
+    Chassis::setup();
+    
+    // 檢查 Pinpoint 是否成功初始化
+    if (Chassis::pinpoint_is_ready()) {
+        printf("Pinpoint sensor is ready!\n");
+    } else {
+        printf("Warning: Pinpoint sensor not available, using encoder odometry\n");
+    }
+    
+    // ========== 主迴圈範例 ==========
+    uint32_t last_status_check = 0;
+    
+    while(1) {
+        
+        // 正常底盤控制（會自動更新 Pinpoint 資料）
+        float cmd_vx = 10.0f;  // cm/s
+        float cmd_vy = 5.0f;   // cm/s
+        float cmd_vw = 0.1f;   // rad/s
+        
+        Chassis::updateSpeed(cmd_vx, cmd_vy, cmd_vw);
+        
+        // ========== 定位資訊使用 ==========
+        
+        // 方法1: 直接使用全域變數（推薦）
+        extern float map_x, map_y, theta;  // 在 chassis.cpp 中定義
+        printf("Current position: X=%.2f cm, Y=%.2f cm, Theta=%.2f deg\n", 
+               map_x, map_y, theta * 180.0f / M_PI);
+        
+        // 方法2: 手動取得位置
+        float x, y, heading;
+        if (Chassis::pinpoint_get_position(&x, &y, &heading)) {
+            printf("Pinpoint position: X=%.2f cm, Y=%.2f cm, H=%.2f deg\n", 
+                   x, y, heading * 180.0f / M_PI);
+        }
+        
+        // ========== 狀態監控 ==========
+        
+        // 每5秒檢查一次 Pinpoint 狀態
+        if (HAL_GetTick() - last_status_check > 5000) {
+            if (!Chassis::pinpoint_is_ready()) {
+                printf("Warning: Pinpoint sensor fault detected!\n");
+                
+                // 可選：嘗試重新校正
+                // Chassis::pinpoint_recalibrate();
+            }
+            last_status_check = HAL_GetTick();
+        }
+        
+        // ========== 特殊操作範例 ==========
+        
+        // 設定特定位置（例如比賽開始時的已知位置）
+        // Chassis::pinpoint_set_position(100.0f, 50.0f, M_PI/4);  // X=100cm, Y=50cm, 45度
+        
+        // 重設位置到原點
+        // Chassis::pinpoint_reset_position();
+        
+        // 重新校正 IMU（機器人必須靜止）
+        // Chassis::pinpoint_recalibrate();
+        
+        HAL_Delay(20);  // 50Hz 更新頻率
+    }
+}
+
+/* ========== 任務導向使用範例 ========== */
+
+void autonomous_navigation_example() {
+    
+    // 目標位置
+    float target_x = 200.0f;  // cm
+    float target_y = 150.0f;  // cm
+    float target_theta = M_PI/2;  // 90度
+    
+    float tolerance_pos = 5.0f;   // 位置容差 5cm
+    float tolerance_angle = 0.1f; // 角度容差約6度
+    
+    while(1) {
+        
+        // 更新底盤
+        Chassis::updateSpeed(0, 0, 0);  // 先停止
+        
+        // 取得目前位置
+        extern float map_x, map_y, theta;
+        
+        // 計算誤差
+        float error_x = target_x - map_x;
+        float error_y = target_y - map_y;
+        float error_theta = target_theta - theta;
+        
+        // 角度誤差標準化
+        while (error_theta > M_PI) error_theta -= 2*M_PI;
+        while (error_theta < -M_PI) error_theta += 2*M_PI;
+        
+        // 檢查是否到達目標
+        float distance = sqrt(error_x*error_x + error_y*error_y);
+        if (distance < tolerance_pos && fabs(error_theta) < tolerance_angle) {
+            printf("Target reached!\n");
+            break;
+        }
+        
+        // 簡單的 P 控制器
+        float kp_pos = 0.5f;
+        float kp_angle = 1.0f;
+        
+        float cmd_vx = kp_pos * error_x;
+        float cmd_vy = kp_pos * error_y;
+        float cmd_vw = kp_angle * error_theta;
+        
+        // 限制最大速度
+        if (cmd_vx > 20.0f) cmd_vx = 20.0f;
+        if (cmd_vx < -20.0f) cmd_vx = -20.0f;
+        if (cmd_vy > 20.0f) cmd_vy = 20.0f;
+        if (cmd_vy < -20.0f) cmd_vy = -20.0f;
+        if (cmd_vw > 1.0f) cmd_vw = 1.0f;
+        if (cmd_vw < -1.0f) cmd_vw = -1.0f;
+        
+        // 執行移動
+        Chassis::updateSpeed(cmd_vx, cmd_vy, cmd_vw);
+        
+        printf("Moving to target: distance=%.2f cm, angle_error=%.2f deg\n", 
+               distance, error_theta * 180.0f / M_PI);
+        
+        HAL_Delay(50);  // 20Hz 控制頻率
+    }
+}
+
+/* ========== ROS 整合範例 ========== */
+
+void ros_publish_odometry_example() {
+    
+    // 假設你有 ROS 發布函數（需要根據你的 ROS 設定調整）
+    /*
+    extern void publish_odometry(float x, float y, float theta, float vx, float vy, float vw);
+    extern float v_x, v_y, v_w;  // 在 chassis.cpp 中定義的速度變數
+    */
+    
+    while(1) {
+        
+        // 更新底盤
+        Chassis::updateSpeed(cmd_v_x, cmd_v_y, cmd_v_w);
+        
+        // 發布里程計資料到 ROS
+        /*
+        publish_odometry(map_x/100.0f, map_y/100.0f, theta,  // 位置 (轉換為公尺)
+                        v_x/100.0f, v_y/100.0f, v_w);       // 速度 (轉換為公尺/秒)
+        */
+        
+        HAL_Delay(20);  // 50Hz
+    }
+}
+
+/* ========== 錯誤處理範例 ========== */
+
+void error_handling_example() {
+    
+    bool pinpoint_error_logged = false;
+    
+    while(1) {
+        
+        // 正常更新
+        Chassis::updateSpeed(cmd_v_x, cmd_v_y, cmd_v_w);
+        
+        // 檢查 Pinpoint 狀態
+        if (!Chassis::pinpoint_is_ready()) {
+            
+            if (!pinpoint_error_logged) {
+                printf("ERROR: Pinpoint sensor not responding!\n");
+                printf("Switching to encoder-only odometry...\n");
+                pinpoint_error_logged = true;
+            }
+            
+            // 這裡可以加入其他處理措施
+            // 例如：降低運行速度、啟動安全模式等
+            
+        } else {
+            
+            if (pinpoint_error_logged) {
+                printf("Pinpoint sensor recovered!\n");
+                pinpoint_error_logged = false;
+            }
+        }
+        
+        HAL_Delay(20);
+    }
+}

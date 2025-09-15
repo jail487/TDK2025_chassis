@@ -21,8 +21,9 @@ namespace ROS1 {
 
     // STM Publishers
     void pub_arrive_destination();
-    void pub_receive_speed_cmd();
     void pub_chassis_pose();
+    void pub_current_stage();
+
 
     // STM Subscribers
     void callback_Chassis(const geometry_msgs::Twist &msg);

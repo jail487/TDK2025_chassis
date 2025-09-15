@@ -55,7 +55,7 @@ void DC_motor::setspeed(float target_speed){
 void DC_motor::updateSpeed(int sign){
     int16_t enc ;
 	enc = __HAL_TIM_GetCounter(enc_htim);
-	speed = sign*(float)enc /(4*resolution*span*reduction_ratio);
+	speed = sign*(float)enc /(4*resolution*span*reduction_ratio);//RPS revolution per second
     __HAL_TIM_SetCounter(enc_htim,0);
 }
 void DC_motor::setup(){

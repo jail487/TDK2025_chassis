@@ -1,0 +1,35 @@
+// 使用範例：修改後的函數調用方式
+
+// === 舊的調用方式 ===
+// setPath_distance(100.0f, 0);  // 沒有速度參數
+// setPath_finding_line(1, 0);   // 沒有速度參數
+
+// === 新的調用方式 ===
+
+// 1. 設定路徑跟隨距離，加入速度控制
+setPath_distance(100.0f, 0, 20.0f);  // 距離100, 方向0(前進), 速度20
+
+// 2. 設定路徑找線，加入速度控制  
+setPath_finding_line(1, 0, 15.0f);   // 線型1, 方向0(前進), 速度15
+
+// 3. 原有的 setmoveDistance 保持不變
+setmoveDistance(50.0f, 30.0f, 90.0f, 25.0f, 1);  // x, y, angle, speed, accel
+
+// === 主要變更說明 ===
+
+// 1. followPath 函數現在包含完整的 weight 邏輯：
+//    - 平滑速度過渡
+//    - 方向切換檢測
+//    - 失去線條處理
+//    - 循跡誤差計算和PID控制
+
+// 2. setPath_distance 新增速度參數：
+//    void setPath_distance(float path_distance, int _path_dir, float speed)
+
+// 3. setPath_finding_line 新增速度參數：
+//    void setPath_finding_line(int _line_type, int _path_dir, float speed)
+
+// 4. 速度控制特性：
+//    - 方向切換時平滑過渡
+//    - 失去線條時自動降速到30%
+//    - 速度變化率限制為每次2.0單位

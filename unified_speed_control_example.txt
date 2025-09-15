@@ -1,0 +1,80 @@
+統一速度控制系統 - 使用說明
+=====================================
+
+## 整合完成的功能
+
+### 統一的 SpeedController 類別
+- 替代了所有函數中分散的加減速邏輯
+- 提供統一的速度平滑控制和加減速計算
+- 支援距離基準和角度基準的速度縮放
+
+### 已更新的函數
+
+#### 1. path_moveDis()
+- 舊版本：有自己的 20% 減速邏輯
+- 新版本：使用 SpeedController.calculateDistanceScale() 計算減速
+
+#### 2. followPath()
+- 舊版本：有自己的 smooth_speed_update lambda 函數
+- 新版本：使用 SpeedController.smoothUpdate() 和 setTarget()
+
+#### 3. moveDistance()
+- 舊版本：複雜的加減速邏輯（線性和角度分開計算）
+- 新版本：使用統一的 calculateDistanceScale() 和 calculateAngleScale()
+
+#### 4. directMove_findLine()
+- 舊版本：直接設定 cmd_v_x/y/w
+- 新版本：使用 SpeedController.setTarget() 和平滑更新
+
+#### 5. path_findLine()
+- 無需更改，因為它調用已更新的 followPath()
+
+## 統一系統的優點
+
+### 1. 代碼重用
+- 所有函數共用相同的加減速算法
+- 減少重複代碼約 200+ 行
+
+### 2. 一致性
+- 所有移動函數現在有相同的速度變化特性
+- 統一的平滑控制避免了速度突變
+
+### 3. 可維護性
+- 只需要在一個地方調整加減速參數
+- 容易添加新的速度控制特性
+
+### 4. 靈活性
+- 支援不同類型的加減速（距離基準、角度基準）
+- 可以輕鬆調整平滑係數和最小速度比例
+
+## 參數調整
+
+### SpeedController 參數
+```cpp
+max_linear_accel = 2.0f;    // 線性加速度限制
+max_angular_accel = 1.0f;   // 角加速度限制
+min_speed_ratio = 0.1f;     // 最小速度比例
+```
+
+### 距離加減速
+- 加速/減速距離：總距離的 10%
+- 最小速度：目標速度的 10%
+
+### 角度加減速
+- 加速/減速角度：總角度的 20%
+- 最小角速度：目標角速度的 20%
+
+## 使用方式
+所有原來的函數調用方式都保持不變：
+- setPath_distance(distance, direction, speed)
+- setPath_finding_line(line_type, direction, speed)
+- setmoveDistance(x, y, angle, speed, accel)
+- 等等...
+
+系統會自動在後台使用統一的速度控制！
+
+## 測試建議
+1. 測試 path_moveDis 的減速效果
+2. 測試 moveDistance 的加減速平滑性
+3. 測試 followPath 的方向切換平滑性
+4. 測試 directMove_findLine 的速度一致性

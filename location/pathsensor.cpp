@@ -12,7 +12,8 @@
 extern ADC_HandleTypeDef hadc3;
 extern ADC_HandleTypeDef hadc1;
 extern DMA_HandleTypeDef hdma_adc1;
-extern float map_x, map_y, last_x, last_y;
+// 注意：map_x, map_y 現在在 Chassis namespace 內，透過 Chassis::map_x 等存取
+extern float last_x, last_y;
 extern float cmd_v_x, cmd_v_y, cmd_v_w;
 extern bool arrive;
 
@@ -22,6 +23,19 @@ int normal_Speed = 16;
 #define w_kd 0
 #define boundry 2000
 #define spin_sp 10
+
+// 新增：速度平滑控制變數
+#define LINE_LOST_THRESHOLD 1000  // 所有傳感器數值低於此閾值時認為失去線條
+#define SPEED_CHANGE_RATE 2.0f    // 速度變化率 (每次調用增減的速度)
+#define MIN_SPEED_RATIO 0.3f      // 最小速度比例 (相對於 normal_Speed)
+
+static float current_speed_x = 0.0f;   // 當前 X 軸速度
+static float current_speed_y = 0.0f;   // 當前 Y 軸速度
+static float target_speed_x = 0.0f;    // 目標 X 軸速度
+static float target_speed_y = 0.0f;    // 目標 Y 軸速度
+static int last_direction = -1;        // 上次的方向
+static bool line_lost = false;         // 是否失去線條
+static uint32_t direction_change_time = 0; // 方向切換時間
 
 uint16_t adcRead_ADC3[12];
 uint16_t adcRead_ADC1[3];
@@ -55,55 +69,174 @@ void path_setup(){
 	    HAL_ADC_Start_DMA(&hadc3, (uint32_t*)adcRead_ADC3, 12);
 		check++;
 }
-void weight(int dir) {//0:front,1:back,2:right,3:,left
+// 平滑速度更新函數
+void smooth_speed_update(float target_x, float target_y) {
+    // 計算速度差值
+    float diff_x = target_x - current_speed_x;
+    float diff_y = target_y - current_speed_y;
+    
+    // 限制速度變化率
+    if (fabs(diff_x) > SPEED_CHANGE_RATE) {
+        current_speed_x += (diff_x > 0) ? SPEED_CHANGE_RATE : -SPEED_CHANGE_RATE;
+    } else {
+        current_speed_x = target_x;
+    }
+    
+    if (fabs(diff_y) > SPEED_CHANGE_RATE) {
+        current_speed_y += (diff_y > 0) ? SPEED_CHANGE_RATE : -SPEED_CHANGE_RATE;
+    } else {
+        current_speed_y = target_y;
+    }
+}
+
+// 檢測是否失去線條
+bool check_line_lost(int dir) {
+    bool lost = false;
+    
+    if (dir == 0) { // front
+        lost = (adcRead_ADC3[0] < LINE_LOST_THRESHOLD && 
+                adcRead_ADC3[1] < LINE_LOST_THRESHOLD && 
+                adcRead_ADC3[2] < LINE_LOST_THRESHOLD && 
+                adcRead_ADC3[3] < LINE_LOST_THRESHOLD);
+    }
+    else if (dir == 1) { // back
+        lost = (adcRead_ADC3[0] < LINE_LOST_THRESHOLD && 
+                adcRead_ADC3[1] < LINE_LOST_THRESHOLD && 
+                adcRead_ADC3[3] < LINE_LOST_THRESHOLD && 
+                adcRead_ADC3[4] < LINE_LOST_THRESHOLD);
+    }
+    else if (dir == 2) { // right
+        lost = (adcRead_ADC3[8] < LINE_LOST_THRESHOLD && 
+                adcRead_ADC3[9] < LINE_LOST_THRESHOLD && 
+                adcRead_ADC3[10] < LINE_LOST_THRESHOLD && 
+                adcRead_ADC3[11] < LINE_LOST_THRESHOLD);
+    }
+    else if (dir == 3) { // left
+        lost = (adcRead_ADC3[4] < LINE_LOST_THRESHOLD && 
+                adcRead_ADC3[5] < LINE_LOST_THRESHOLD && 
+                adcRead_ADC3[6] < LINE_LOST_THRESHOLD && 
+                adcRead_ADC3[7] < LINE_LOST_THRESHOLD);
+    }
+    
+    return lost;
+}
+
+void weight(int dir) {//0:front,1:back,2:right,3:left
+    // 檢測方向切換
+    bool direction_changed = (last_direction != -1 && last_direction != dir);
+    if (direction_changed) {
+        direction_change_time = HAL_GetTick();
+        // 保存當前速度作為初始速度
+        current_speed_x = cmd_v_x;
+        current_speed_y = cmd_v_y;
+    }
+    last_direction = dir;
+    
+    // 檢測是否失去線條
+    line_lost = check_line_lost(dir);
+    
+    // 如果失去線條，降低速度繼續前進
+    if (line_lost) {
+        float min_speed = normal_Speed * MIN_SPEED_RATIO;
+        
+        if (dir == 0) {        // front
+            target_speed_y = min_speed;
+            target_speed_x = 0;
+        }
+        else if (dir == 1) {   // back
+            target_speed_y = -min_speed;
+            target_speed_x = 0;
+        }
+        else if (dir == 2) {   // right
+            target_speed_y = 0;
+            target_speed_x = min_speed;
+        }
+        else if (dir == 3) {   // left
+            target_speed_y = 0;
+            target_speed_x = -min_speed;
+        }
+        
+        smooth_speed_update(target_speed_x, target_speed_y);
+        cmd_v_x = current_speed_x;
+        cmd_v_y = current_speed_y;
+        cmd_v_w = 0; // 失去線條時不進行角度修正
+        return;
+    }
+    
     // Calculate line following error (P and D)
-	if (dir == 0){//front
-    weight_err = ((float)(-3*adcRead_ADC3[0] - adcRead_ADC3[1] + adcRead_ADC3[2] + 3*adcRead_ADC3[3]) /
-                 (adcRead_ADC3[0] + adcRead_ADC3[1]+ 4096 +adcRead_ADC3[2] + adcRead_ADC3[3]));
-    weight_change = weight_err - weight_lasttime;
-    weight_lasttime = weight_err;
+    if (dir == 0){//front
+        weight_err = ((float)(-3*adcRead_ADC3[0] - adcRead_ADC3[1] + adcRead_ADC3[2] + 3*adcRead_ADC3[3]) /
+                     (adcRead_ADC3[0] + adcRead_ADC3[1]+ 4096 +adcRead_ADC3[2] + adcRead_ADC3[3]));
+        weight_change = weight_err - weight_lasttime;
+        weight_lasttime = weight_err;
 
-    // For mecanum: output chassis velocity vector
-    cmd_v_y = normal_Speed; // Forward speed (positive: forward)
-    cmd_v_x = 0;            // No strafe (add logic here if you want to strafe)
-    cmd_v_w = (weight_err * w_kp_y + weight_change * w_kd); // Rotation correction
-	}
-	else if(dir == 1){//back
-	weight_err = ((float)(-3*adcRead_ADC3[0] - adcRead_ADC3[1] + adcRead_ADC3[3] + 3*adcRead_ADC3[4]) /
-		            (adcRead_ADC3[0] + adcRead_ADC3[1]+ 4096 +adcRead_ADC3[3] + adcRead_ADC3[4]));
-	weight_change = weight_err - weight_lasttime;
-	weight_lasttime = weight_err;
+        // 設定目標速度
+        target_speed_y = normal_Speed;
+        target_speed_x = 0;
+        
+        // 平滑速度更新
+        smooth_speed_update(target_speed_x, target_speed_y);
+        
+        // For mecanum: output chassis velocity vector
+        cmd_v_y = current_speed_y; // 使用平滑後的速度
+        cmd_v_x = current_speed_x;
+        cmd_v_w = (weight_err * w_kp_y + weight_change * w_kd); // Rotation correction
+    }
+    else if(dir == 1){//back
+        weight_err = ((float)(-3*adcRead_ADC3[0] - adcRead_ADC3[1] + adcRead_ADC3[3] + 3*adcRead_ADC3[4]) /
+                    (adcRead_ADC3[0] + adcRead_ADC3[1]+ 4096 +adcRead_ADC3[3] + adcRead_ADC3[4]));
+        weight_change = weight_err - weight_lasttime;
+        weight_lasttime = weight_err;
 
-    // For mecanum: output chassis velocity vector
-	cmd_v_y = -normal_Speed; // Forward speed (positive: forward)
-	cmd_v_x = 0;            // No strafe (add logic here if you want to strafe)
-	cmd_v_w = (weight_err * w_kp_y + weight_change * w_kd); // Rotation correction
-	}
-	else if(dir == 2){//right
-    weight_err = ((float)(-3*adcRead_ADC3[8] - adcRead_ADC3[9] + adcRead_ADC3[10] + 3*adcRead_ADC3[11]) /
-						   (adcRead_ADC3[8] + adcRead_ADC3[9]+ 4096 +adcRead_ADC3[10] + adcRead_ADC3[11]));
-	weight_change = weight_err - weight_lasttime;
-	weight_lasttime = weight_err;
+        // 設定目標速度
+        target_speed_y = -normal_Speed;
+        target_speed_x = 0;
+        
+        // 平滑速度更新
+        smooth_speed_update(target_speed_x, target_speed_y);
+        
+        // For mecanum: output chassis velocity vector
+        cmd_v_y = current_speed_y; // 使用平滑後的速度
+        cmd_v_x = current_speed_x;
+        cmd_v_w = (weight_err * w_kp_y + weight_change * w_kd); // Rotation correction
+    }
+    else if(dir == 2){//right
+        weight_err = ((float)(-3*adcRead_ADC3[8] - adcRead_ADC3[9] + adcRead_ADC3[10] + 3*adcRead_ADC3[11]) /
+                           (adcRead_ADC3[8] + adcRead_ADC3[9]+ 4096 +adcRead_ADC3[10] + adcRead_ADC3[11]));
+        weight_change = weight_err - weight_lasttime;
+        weight_lasttime = weight_err;
 
-				// For mecanum: output chassis velocity vector
-	cmd_v_y = 0; // Forward speed (positive: forward)
-	cmd_v_x = normal_Speed;            // No strafe (add logic here if you want to strafe)
-	cmd_v_w = (weight_err * w_kp_x + weight_change * w_kd); // Rotation correction
+        // 設定目標速度
+        target_speed_y = 0;
+        target_speed_x = normal_Speed;
+        
+        // 平滑速度更新
+        smooth_speed_update(target_speed_x, target_speed_y);
+        
+        // For mecanum: output chassis velocity vector
+        cmd_v_y = current_speed_y; // 使用平滑後的速度
+        cmd_v_x = current_speed_x;
+        cmd_v_w = (weight_err * w_kp_x + weight_change * w_kd); // Rotation correction
+    }
+    else if(dir == 3){//left
+        weight_err = ((float)(-3*adcRead_ADC3[4] - adcRead_ADC3[5] + adcRead_ADC3[6] + 3*adcRead_ADC3[7]) /
+                         (adcRead_ADC3[4] + adcRead_ADC3[5]+ 4096 +adcRead_ADC3[6] + adcRead_ADC3[7]));
+        weight_change = weight_err - weight_lasttime;
+        weight_lasttime = weight_err;
 
-	}
-	else if(dir == 3){//left
-	weight_err = ((float)(-3*adcRead_ADC3[4] - adcRead_ADC3[5] + adcRead_ADC3[6] + 3*adcRead_ADC3[7]) /
-				     (adcRead_ADC3[4] + adcRead_ADC3[5]+ 4096 +adcRead_ADC3[6] + adcRead_ADC3[7]));
-	weight_change = weight_err - weight_lasttime;
-	weight_lasttime = weight_err;
-
-		  // For mecanum: output chassis velocity vector
-	cmd_v_y = 0; // Forward speed (positive: forward)
-	cmd_v_x = -normal_Speed;            // No strafe (add logic here if you want to strafe)
-	cmd_v_w = (weight_err * w_kp_x + weight_change * w_kd); // Rotation correction
-	}
-
-	}
+        // 設定目標速度
+        target_speed_y = 0;
+        target_speed_x = -normal_Speed;
+        
+        // 平滑速度更新
+        smooth_speed_update(target_speed_x, target_speed_y);
+        
+        // For mecanum: output chassis velocity vector
+        cmd_v_y = current_speed_y; // 使用平滑後的速度
+        cmd_v_x = current_speed_x;
+        cmd_v_w = (weight_err * w_kp_x + weight_change * w_kd); // Rotation correction
+    }
+}
 
 
 //motor_speed[0]:right motor speed, motor_speed[1]:left motor speed
@@ -160,10 +293,11 @@ void path(int dir) { // follow path for mecanum chassis
 //1:front find line, 2:middle find line, 3:find cross road, 4:find line
 bool line_check(int type){
 	int b = 1000;
+	int c= 3000;
 
 	switch(type){
     	case 1://left and right line
-            if(adcRead_ADC3[5] >= b && adcRead_ADC3[10] >= b)
+            if(adcRead_ADC3[5] >= b && adcRead_ADC3[10] >= b && adcRead_ADC3[1] <= b)
                 return 1;
             else
                 return 0;
@@ -177,7 +311,7 @@ bool line_check(int type){
             break;
 		
 	    case 3://left and right
-            if(adcRead_ADC3[5] >= b && adcRead_ADC3[6] >= b && adcRead_ADC3[9] >= b && adcRead_ADC3[10] >= b)
+            if((adcRead_ADC3[5] >= b || adcRead_ADC3[6] >= b )&& (adcRead_ADC3[9] >= b || adcRead_ADC3[10] >= b))
                 return 1;
             else
                 return 0;
