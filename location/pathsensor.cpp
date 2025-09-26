@@ -17,17 +17,17 @@ extern float last_x, last_y;
 extern float cmd_v_x, cmd_v_y, cmd_v_w;
 extern bool arrive;
 
-int normal_Speed = 16;
-#define w_kp_y 0.4
-#define w_kp_x 0.15
-#define w_kd 0
+float normal_Speed = 25.f;
+float w_kp_y = 1.5;
+float w_kp_x = 0.15;
+float w_kd = 0.f;
 #define boundry 2000
 #define spin_sp 10
 
-// 新增：速度平滑控制變數
-#define LINE_LOST_THRESHOLD 1000  // 所有傳感器數值低於此閾值時認為失去線條
-#define SPEED_CHANGE_RATE 2.0f    // 速度變化率 (每次調用增減的速度)
-#define MIN_SPEED_RATIO 0.3f      // 最小速度比例 (相對於 normal_Speed)
+// 新增：速度平滑控制變數 - 改為可調整的全域變數
+float pathfinding_speed_change_rate = 2.0f;    // 速度變化率 (每次調用增減的速度)
+float pathfinding_min_speed_ratio = 0.5f;      // 最小速度比例 (相對於 normal_Speed)
+int pathfinding_line_threshold = 1000;         // 所有傳感器數值低於此閾值時認為失去線條
 
 static float current_speed_x = 0.0f;   // 當前 X 軸速度
 static float current_speed_y = 0.0f;   // 當前 Y 軸速度
@@ -57,6 +57,13 @@ adcRead_ADC3[4]  adc3-4   PA0  left
 adcRead_ADC3[5]  adc3-5   PB0  middle right
 adcRead_ADC3[6]  adc3-6   PB1  middle left
 */
+
+void setLinePI(float kp_y, float kp_x, float kd) {
+    w_kp_y = kp_y;
+    w_kp_x = kp_x;
+    w_kd = kd;
+    
+}
 void path_setup(){
 	//if(HAL_ADC_Start_DMA(&hadc3,(uint32_t *)adcRead_ADC3,7) != HAL_OK)
 	// Start DMA for ADC3, storing 12 channels in adcRead_ADC3_ADC3
@@ -76,14 +83,14 @@ void smooth_speed_update(float target_x, float target_y) {
     float diff_y = target_y - current_speed_y;
     
     // 限制速度變化率
-    if (fabs(diff_x) > SPEED_CHANGE_RATE) {
-        current_speed_x += (diff_x > 0) ? SPEED_CHANGE_RATE : -SPEED_CHANGE_RATE;
+    if (fabs(diff_x) > pathfinding_speed_change_rate) {
+        current_speed_x += (diff_x > 0) ? pathfinding_speed_change_rate : -pathfinding_speed_change_rate;
     } else {
         current_speed_x = target_x;
     }
     
-    if (fabs(diff_y) > SPEED_CHANGE_RATE) {
-        current_speed_y += (diff_y > 0) ? SPEED_CHANGE_RATE : -SPEED_CHANGE_RATE;
+    if (fabs(diff_y) > pathfinding_speed_change_rate) {
+        current_speed_y += (diff_y > 0) ? pathfinding_speed_change_rate : -pathfinding_speed_change_rate;
     } else {
         current_speed_y = target_y;
     }
@@ -94,28 +101,28 @@ bool check_line_lost(int dir) {
     bool lost = false;
     
     if (dir == 0) { // front
-        lost = (adcRead_ADC3[0] < LINE_LOST_THRESHOLD && 
-                adcRead_ADC3[1] < LINE_LOST_THRESHOLD && 
-                adcRead_ADC3[2] < LINE_LOST_THRESHOLD && 
-                adcRead_ADC3[3] < LINE_LOST_THRESHOLD);
+        lost = (adcRead_ADC3[0] < pathfinding_line_threshold && 
+                adcRead_ADC3[1] < pathfinding_line_threshold && 
+                adcRead_ADC3[2] < pathfinding_line_threshold && 
+                adcRead_ADC3[3] < pathfinding_line_threshold);
     }
     else if (dir == 1) { // back
-        lost = (adcRead_ADC3[0] < LINE_LOST_THRESHOLD && 
-                adcRead_ADC3[1] < LINE_LOST_THRESHOLD && 
-                adcRead_ADC3[3] < LINE_LOST_THRESHOLD && 
-                adcRead_ADC3[4] < LINE_LOST_THRESHOLD);
+        lost = (adcRead_ADC3[0] < pathfinding_line_threshold && 
+                adcRead_ADC3[1] < pathfinding_line_threshold && 
+                adcRead_ADC3[3] < pathfinding_line_threshold && 
+                adcRead_ADC3[4] < pathfinding_line_threshold);
     }
     else if (dir == 2) { // right
-        lost = (adcRead_ADC3[8] < LINE_LOST_THRESHOLD && 
-                adcRead_ADC3[9] < LINE_LOST_THRESHOLD && 
-                adcRead_ADC3[10] < LINE_LOST_THRESHOLD && 
-                adcRead_ADC3[11] < LINE_LOST_THRESHOLD);
+        lost = (adcRead_ADC3[8] < pathfinding_line_threshold && 
+                adcRead_ADC3[9] < pathfinding_line_threshold && 
+                adcRead_ADC3[10] < pathfinding_line_threshold && 
+                adcRead_ADC3[11] < pathfinding_line_threshold);
     }
     else if (dir == 3) { // left
-        lost = (adcRead_ADC3[4] < LINE_LOST_THRESHOLD && 
-                adcRead_ADC3[5] < LINE_LOST_THRESHOLD && 
-                adcRead_ADC3[6] < LINE_LOST_THRESHOLD && 
-                adcRead_ADC3[7] < LINE_LOST_THRESHOLD);
+        lost = (adcRead_ADC3[4] < pathfinding_line_threshold && 
+                adcRead_ADC3[5] < pathfinding_line_threshold && 
+                adcRead_ADC3[6] < pathfinding_line_threshold && 
+                adcRead_ADC3[7] < pathfinding_line_threshold);
     }
     
     return lost;
@@ -137,7 +144,7 @@ void weight(int dir) {//0:front,1:back,2:right,3:left
     
     // 如果失去線條，降低速度繼續前進
     if (line_lost) {
-        float min_speed = normal_Speed * MIN_SPEED_RATIO;
+        float min_speed = normal_Speed * pathfinding_min_speed_ratio;
         
         if (dir == 0) {        // front
             target_speed_y = min_speed;
@@ -292,7 +299,7 @@ void path(int dir) { // follow path for mecanum chassis
 //}
 //1:front find line, 2:middle find line, 3:find cross road, 4:find line
 bool line_check(int type){
-	int b = 1000;
+	int b = 2000;
 	int c= 3000;
 
 	switch(type){
@@ -303,8 +310,8 @@ bool line_check(int type){
                 return 0;
             break; // Note: 'break' after 'return' is redundant but harmless.
 	
-	    case 2:////front and right line
-	    	  if((adcRead_ADC3[1] >= b||adcRead_ADC3[2] >= b) && (adcRead_ADC3[9] >= b||adcRead_ADC3[10] >= b ))
+	    case 2:////front and right line and left line
+	    	  if((adcRead_ADC3[1] >= b||adcRead_ADC3[2] >= b) && (adcRead_ADC3[9] >= b||adcRead_ADC3[10] >= b )&&(adcRead_ADC3[5] >= b||adcRead_ADC3[6] >= b))
                 return 1;
             else
                 return 0;
@@ -328,8 +335,8 @@ bool line_check(int type){
             else
                 return 0;
             break;
-	    case 6:
-            if(adcRead_ADC3[5] >= b && adcRead_ADC3[6] >= b)
+	    case 6://right line
+            if(adcRead_ADC3[9] >= b || adcRead_ADC3[10] >= b )
                 return 1;
             else
                 return 0;

@@ -42,8 +42,10 @@ Chassis \
 Core/Inc \
 Core/Src \
 Core/Startup \
+Drivers/Pinpoint \
 Drivers/STM32H7xx_HAL_Driver/Src \
 Drivers/VL53L0X \
+Drivers/VL53L0X_Class \
 Lifter \
 Motor \
 ROS1 \

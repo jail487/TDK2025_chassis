@@ -1,9 +1,4 @@
 location/VL53.o: ../location/VL53.cpp ../location/VL53.h \
- ../Drivers/VL53L0X/vl53l0x_api.h \
- ../Drivers/VL53L0X/vl53l0x_api_strings.h \
- ../Drivers/VL53L0X/vl53l0x_def.h ../Drivers/VL53L0X/vl53l0x_device.h \
- ../Drivers/VL53L0X/vl53l0x_types.h ../Drivers/VL53L0X/vl53l0x_platform.h \
- ../Drivers/VL53L0X/vl53l0x_platform_log.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h \
  ../Core/Inc/stm32h7xx_hal_conf.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h \
@@ -38,15 +33,13 @@ location/VL53.o: ../location/VL53.cpp ../location/VL53.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
- ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h
+ ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
+ ../Drivers/VL53L0X/vl53l0x_api.h \
+ ../Drivers/VL53L0X/vl53l0x_api_strings.h \
+ ../Drivers/VL53L0X/vl53l0x_def.h ../Drivers/VL53L0X/vl53l0x_device.h \
+ ../Drivers/VL53L0X/vl53l0x_types.h ../Drivers/VL53L0X/vl53l0x_platform.h \
+ ../Drivers/VL53L0X/vl53l0x_platform_log.h
 ../location/VL53.h:
-../Drivers/VL53L0X/vl53l0x_api.h:
-../Drivers/VL53L0X/vl53l0x_api_strings.h:
-../Drivers/VL53L0X/vl53l0x_def.h:
-../Drivers/VL53L0X/vl53l0x_device.h:
-../Drivers/VL53L0X/vl53l0x_types.h:
-../Drivers/VL53L0X/vl53l0x_platform.h:
-../Drivers/VL53L0X/vl53l0x_platform_log.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h:
@@ -82,3 +75,10 @@ location/VL53.o: ../location/VL53.cpp ../location/VL53.h \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
+../Drivers/VL53L0X/vl53l0x_api.h:
+../Drivers/VL53L0X/vl53l0x_api_strings.h:
+../Drivers/VL53L0X/vl53l0x_def.h:
+../Drivers/VL53L0X/vl53l0x_device.h:
+../Drivers/VL53L0X/vl53l0x_types.h:
+../Drivers/VL53L0X/vl53l0x_platform.h:
+../Drivers/VL53L0X/vl53l0x_platform_log.h:

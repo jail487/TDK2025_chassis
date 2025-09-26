@@ -34,7 +34,7 @@ ros::Publisher pub_chassis("/odometry", &chassis_current_pose);
 ros::Publisher pub_currentStage("/current_stage", &currentStage);
 
 /** STM Subscribers **/
-ros::Subscriber<geometry_msgs::Twist> sub_chassis("/cmd_vel", ROS1::callback_Chassis);
+ros::Subscriber<std_msgs::Int32> sub_chassis("/cmd_Xoffset", ROS1::callback_Xoffset);
 ros::Subscriber<std_msgs::Bool> sub_missionFinish("/cmd_missionFinish", ROS1::callback_missonFinish);
 ros::Subscriber<std_msgs::Int32> sub_coffeeTable("/cmd_coffeeTable", ROS1::callback_coffeeTable);
 ros::Subscriber<std_msgs::Int32> sub_CupColor("/cmd_CupColor", ROS1::callback_CupColor);
@@ -113,9 +113,8 @@ int spin  = 0;
    * @brief Chassis callback, 接收 ROS 底盤速度指令。
    * @param geometry_msgs::Twist
    */
-  void callback_Chassis(const geometry_msgs::Twist &msg) {
-      xDis_receive = msg.linear.x;
-      yDis_receive = msg.linear.y;
+  void callback_Xoffset(const std_msgs::Int32 &msg) {
+      xDis_receive = msg.data;
       //cmd_v_w = msg.angular.z;
       return;
   }
@@ -134,7 +133,9 @@ int spin  = 0;
    * @param std_msgs::Int32
    */
   void callback_coffeeTable(const std_msgs::Int32 &msg) {
-      coffeTable = msg.data;
+	  if(stage == 21){
+      coffeTable = (int)msg.data;
+	  }
       return;
   }
 
@@ -143,7 +144,7 @@ int spin  = 0;
    * @param std_msgs::Int32
    */
   void callback_CupColor(const std_msgs::Int32 &msg) {
-      cupColor = msg.data;
+      cupColor = (int)msg.data;
       return;
   }
 

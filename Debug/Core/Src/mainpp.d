@@ -40,7 +40,15 @@ Core/Src/mainpp.o: ../Core/Src/mainpp.cpp ../Core/Inc/mainpp.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
  ../location/location.h ../Motor/DC_motor.h ../location/pathsensor.h \
- ../Chassis/chassis.h ../location/script.h ../Lifter/lifter.h
+ ../Chassis/chassis.h ../location/script.h ../Lifter/lifter.h \
+ ../Lifter/../Drivers/VL53L0X_Class/VL53L0X_Class.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_api.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_api_strings.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_def.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_device.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_types.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_platform.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_platform_log.h
 ../Core/Inc/mainpp.h:
 ../ROS1/ROS1.h:
 ../Core/Inc/geometry_msgs/Twist.h:
@@ -93,3 +101,11 @@ Core/Src/mainpp.o: ../Core/Src/mainpp.cpp ../Core/Inc/mainpp.h \
 ../Chassis/chassis.h:
 ../location/script.h:
 ../Lifter/lifter.h:
+../Lifter/../Drivers/VL53L0X_Class/VL53L0X_Class.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_api.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_api_strings.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_def.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_device.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_types.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_platform.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_platform_log.h:

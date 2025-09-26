@@ -5,13 +5,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../Chassis/chassis.cpp 
+../Chassis/chassis.cpp \
+../Chassis/pinpoint_usage_example.cpp 
 
 OBJS += \
-./Chassis/chassis.o 
+./Chassis/chassis.o \
+./Chassis/pinpoint_usage_example.o 
 
 CPP_DEPS += \
-./Chassis/chassis.d 
+./Chassis/chassis.d \
+./Chassis/pinpoint_usage_example.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -21,7 +24,7 @@ Chassis/%.o Chassis/%.su Chassis/%.cyclo: ../Chassis/%.cpp Chassis/subdir.mk
 clean: clean-Chassis
 
 clean-Chassis:
-	-$(RM) ./Chassis/chassis.cyclo ./Chassis/chassis.d ./Chassis/chassis.o ./Chassis/chassis.su
+	-$(RM) ./Chassis/chassis.cyclo ./Chassis/chassis.d ./Chassis/chassis.o ./Chassis/chassis.su ./Chassis/pinpoint_usage_example.cyclo ./Chassis/pinpoint_usage_example.d ./Chassis/pinpoint_usage_example.o ./Chassis/pinpoint_usage_example.su
 
 .PHONY: clean-Chassis
 

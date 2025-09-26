@@ -1,0 +1,39 @@
+../Drivers/VL53L0X_Class/VL53L0X_Class.h:71:5:VL53_MeasurementData::VL53_MeasurementData()	1
+../Drivers/VL53L0X_Class/VL53L0X_Class.h:145:10:bool VL53L0X_Enhanced::IsInitialized() const	1
+../Drivers/VL53L0X_Class/VL53L0X_Class.h:179:14:uint16_t VL53L0X_Enhanced::GetLastDistance() const	1
+../Drivers/VL53L0X_Class/VL53L0X_Class.h:316:17:std::string VL53L0X_Enhanced::GetSensorID() const	1
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:16:1:VL53L0X_Enhanced::VL53L0X_Enhanced(GPIO_TypeDef*, uint16_t, uint8_t, I2C_HandleTypeDef*, const char*)	3
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:44:1:VL53L0X_Enhanced::~VL53L0X_Enhanced()	2
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:52:6:bool VL53L0X_Enhanced::Init()	1
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:58:6:bool VL53L0X_Enhanced::Init(VL53_Accuracy, uint32_t)	5
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:110:10:uint16_t VL53L0X_Enhanced::GetDistance()	3
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:123:6:bool VL53L0X_Enhanced::GetDistance(uint16_t&, VL53_Status&)	3
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:156:6:bool VL53L0X_Enhanced::GetMeasurement(VL53_MeasurementData&)	1
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:168:6:void VL53L0X_Enhanced::Update()	2
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:178:6:bool VL53L0X_Enhanced::StartContinuous(uint32_t)	4
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:206:6:bool VL53L0X_Enhanced::StopContinuous()	4
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:225:6:bool VL53L0X_Enhanced::IsDataReady()	5
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:238:6:bool VL53L0X_Enhanced::CalibrateOffset(uint16_t)	3
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:263:6:bool VL53L0X_Enhanced::CalibrateCrosstalk()	3
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:285:6:bool VL53L0X_Enhanced::PerformFullCalibration(uint16_t)	4
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:304:6:bool VL53L0X_Enhanced::SetAccuracy(VL53_Accuracy)	2
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:315:6:bool VL53L0X_Enhanced::SetMeasurementMode(VL53_Accuracy)	8
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:354:6:bool VL53L0X_Enhanced::SetTimingBudget(uint32_t)	3
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:372:6:bool VL53L0X_Enhanced::SetSignalThreshold(uint32_t)	2
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:387:6:bool VL53L0X_Enhanced::SetI2CAddress(uint8_t)	3
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:412:13:std::string VL53L0X_Enhanced::GetSensorInfo() const	4
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:439:6:bool VL53L0X_Enhanced::Reset()	2
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:458:13:static std::string VL53L0X_Enhanced::StatusToString(VL53_Status)	9
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:476:13:VL53_Status VL53L0X_Enhanced::ConvertDeviceStatus(uint8_t)	6
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:490:15:VL53L0X_Error VL53L0X_Enhanced::InitializeDevice()	5
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:518:15:VL53L0X_Error VL53L0X_Enhanced::ApplyConfiguration()	11
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:577:6:void VL53L0X_Enhanced::ResetSensor()	1
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:585:1:VL53L0X_MultiSensor::VL53L0X_MultiSensor(VL53L0X_Enhanced**, uint8_t)	1
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:590:6:bool VL53L0X_MultiSensor::InitAll()	5
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:612:6:void VL53L0X_MultiSensor::UpdateAll()	5
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:621:9:uint8_t VL53L0X_MultiSensor::GetAllDistances(uint16_t*, VL53_Status*)	10
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:656:6:bool VL53L0X_MultiSensor::StartAllContinuous(uint32_t)	6
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:671:6:bool VL53L0X_MultiSensor::StopAllContinuous()	6
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:686:6:bool VL53L0X_MultiSensor::CalibrateAll(uint16_t)	7
+../Drivers/VL53L0X_Class/VL53L0X_Class.cpp:705:13:std::string VL53L0X_MultiSensor::GetStatusSummary() const	4
+C:\ST\STM32CubeIDE_1.18.1\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344\tools\arm-none-eabi\include\c++\13.3.1\bits\new_allocator.h:104:7:std::__new_allocator<_Tp>::~__new_allocator() [with _Tp = char]	1

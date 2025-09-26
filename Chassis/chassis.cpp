@@ -96,51 +96,11 @@ void setup(){
     world_v_x = 0.0f;
     world_v_y = 0.0f;
     
-    // 初始化 pinpoint_status 變數 (確保 Live Expressions 可以看到)
-    // Chassis::pinpoint_status.init_step = 0;
-    // Chassis::pinpoint_status.init_success = 0;
-    // Chassis::pinpoint_status.communication_ok = 0;
-    // // 注意：不要重置 device_id，讓 pinpoint_init 設置診斷代碼
-    // Chassis::pinpoint_status.consecutive_failures = 0;
-    
     wheel_FR.setup();
     wheel_FL.setup();
     wheel_BR.setup();
     wheel_BL.setup();
     
-    // Initialize Pinpoint sensor
-//    if (pinpoint_init()) {
-//        // 初始化成功後，重置位置為原點
-//        HAL_Delay(100);
-//        pinpoint_reset_position();
-//
-//        // 自動配置 DMA 模式 - 暫時禁用 DMA，使用定期同步讀取
-//        // pinpoint_enable_dma(PINPOINT_DMA_ENABLED_DEFAULT);     // 暫時禁用 DMA 模式
-//        // pinpoint_set_dma_interval(PINPOINT_DMA_INTERVAL_DEFAULT); // 暫時禁用間隔設定
-//
-//        // 使用同步模式以確保穩定性
-//        pinpoint_dma_enabled = false;  // 強制使用同步模式
-//
-//        // 立即啟動第一次 DMA 讀取，之後會由中斷回調自動鏈式觸發
-//        if (pinpoint_dma_enabled) {
-//            HAL_StatusTypeDef status = Pinpoint_StartDMARead(&pinpoint);
-//            if (status == HAL_OK) {
-//                Chassis::pinpoint_status.dma_transfers++;
-//                pinpoint_last_dma_start = HAL_GetTick();
-//            } else {
-//                Chassis::pinpoint_status.dma_errors++;
-//                // DMA 啟動失敗，記錄錯誤但保持 DMA 模式，讓回調函數重試
-//                // 不禁用 DMA，讓系統自動恢復
-//                static uint32_t dma_start_failures = 0;
-//                dma_start_failures++;
-//
-//                // 只有在連續失敗很多次時才暫時切換（但很快會重新啟用）
-//                if (dma_start_failures > 100) {
-//                    dma_start_failures = 0;  // 重置計數器，讓系統繼續嘗試
-//                }
-//            }
-//        }
-//    }
 }
 
 
@@ -206,15 +166,10 @@ void localization() {
     float cos_t = cos(theta);
     float sin_t = sin(theta);
 
-    // 機體座標轉換成世界座標再積分 (encoder-based positioning)
     map_x += (v_x * cos_t - v_y * sin_t) * span;
     map_y += (v_x * sin_t + v_y * cos_t) * span;
     theta += v_w * span;
-    
-    // Pinpoint 定位資料會在 pinpoint_update() 中單獨更新到 pinpoint_status 中
-    // 用於精度比較，不影響 map_x, map_y, theta
-    
-    // 可選：角度標準化在 -π ~ π，避免θ無限增長
+
     if (theta > M_PI) {
         theta -= 2 * M_PI;
     } else if (theta < -M_PI) {
@@ -253,12 +208,9 @@ void updateSpeed(){
     mecan_FK_transform();
     localization();
     
-    // Pinpoint 更新已移至 DMA 中斷
-    // 但在 DMA 模式停用時，仍需要備用更新
-//    if (pinpoint_initialized && !pinpoint_dma_enabled) {
-//        pinpoint_update();  // 僅在 DMA 停用時調用
-//    }
 }
+
+
 }
 
 // Pinpoint implementation functions

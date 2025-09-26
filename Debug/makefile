@@ -13,8 +13,10 @@ RM := rm -rf
 -include ROS1/subdir.mk
 -include Motor/subdir.mk
 -include Lifter/subdir.mk
+-include Drivers/VL53L0X_Class/subdir.mk
 -include Drivers/VL53L0X/subdir.mk
 -include Drivers/STM32H7xx_HAL_Driver/Src/subdir.mk
+-include Drivers/Pinpoint/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
 -include Core/Inc/subdir.mk

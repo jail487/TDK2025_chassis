@@ -34,7 +34,20 @@ location/location.o: ../location/location.cpp ../location/location.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
- ../location/pathsensor.h ../Chassis/chassis.h ../location/pathSensor.h
+ ../location/pathsensor.h ../Chassis/chassis.h ../Lifter/lifter.h \
+ ../Lifter/../Drivers/VL53L0X_Class/VL53L0X_Class.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_api.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_api_strings.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_def.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_device.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_types.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_platform.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_platform_log.h \
+ ../location/pathSensor.h ../ROS1/ros1.h \
+ ../Core/Inc/geometry_msgs/Twist.h ../Core/Inc/ros/msg.h \
+ ../Core/Inc/geometry_msgs/Vector3.h ../Core/Inc/geometry_msgs/Pose.h \
+ ../Core/Inc/geometry_msgs/Point.h ../Core/Inc/geometry_msgs/Quaternion.h \
+ ../Core/Inc/std_msgs/Int32.h ../Core/Inc/std_msgs/Bool.h
 ../location/location.h:
 ../Motor/DC_motor.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
@@ -74,4 +87,22 @@ location/location.o: ../location/location.cpp ../location/location.h \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
 ../location/pathsensor.h:
 ../Chassis/chassis.h:
+../Lifter/lifter.h:
+../Lifter/../Drivers/VL53L0X_Class/VL53L0X_Class.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_api.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_api_strings.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_def.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_device.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_types.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_platform.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_platform_log.h:
 ../location/pathSensor.h:
+../ROS1/ros1.h:
+../Core/Inc/geometry_msgs/Twist.h:
+../Core/Inc/ros/msg.h:
+../Core/Inc/geometry_msgs/Vector3.h:
+../Core/Inc/geometry_msgs/Pose.h:
+../Core/Inc/geometry_msgs/Point.h:
+../Core/Inc/geometry_msgs/Quaternion.h:
+../Core/Inc/std_msgs/Int32.h:
+../Core/Inc/std_msgs/Bool.h:

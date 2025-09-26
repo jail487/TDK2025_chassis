@@ -1,5 +1,6 @@
 Lifter/lifter.o: ../Lifter/lifter.cpp ../Lifter/lifter.h \
- ../Motor/DC_motor.h ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h \
+ ../Lifter/../Drivers/VL53L0X_Class/VL53L0X_Class.h \
+ ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h \
  ../Core/Inc/stm32h7xx_hal_conf.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_def.h \
@@ -34,13 +35,15 @@ Lifter/lifter.o: ../Lifter/lifter.cpp ../Lifter/lifter.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
- ../location/VL53.h ../Drivers/VL53L0X/vl53l0x_api.h \
- ../Drivers/VL53L0X/vl53l0x_api_strings.h \
- ../Drivers/VL53L0X/vl53l0x_def.h ../Drivers/VL53L0X/vl53l0x_device.h \
- ../Drivers/VL53L0X/vl53l0x_types.h ../Drivers/VL53L0X/vl53l0x_platform.h \
- ../Drivers/VL53L0X/vl53l0x_platform_log.h
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_api.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_api_strings.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_def.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_device.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_types.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_platform.h \
+ ../Chassis/../Drivers/VL53L0X/vl53l0x_platform_log.h ../Motor/DC_motor.h
 ../Lifter/lifter.h:
-../Motor/DC_motor.h:
+../Lifter/../Drivers/VL53L0X_Class/VL53L0X_Class.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h:
@@ -76,11 +79,11 @@ Lifter/lifter.o: ../Lifter/lifter.cpp ../Lifter/lifter.h \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
-../location/VL53.h:
-../Drivers/VL53L0X/vl53l0x_api.h:
-../Drivers/VL53L0X/vl53l0x_api_strings.h:
-../Drivers/VL53L0X/vl53l0x_def.h:
-../Drivers/VL53L0X/vl53l0x_device.h:
-../Drivers/VL53L0X/vl53l0x_types.h:
-../Drivers/VL53L0X/vl53l0x_platform.h:
-../Drivers/VL53L0X/vl53l0x_platform_log.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_api.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_api_strings.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_def.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_device.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_types.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_platform.h:
+../Chassis/../Drivers/VL53L0X/vl53l0x_platform_log.h:
+../Motor/DC_motor.h:

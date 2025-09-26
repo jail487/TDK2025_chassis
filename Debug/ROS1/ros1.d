@@ -6,7 +6,7 @@ ROS1/ros1.o: ../ROS1/ros1.cpp ../Core/Inc/ros.h \
  ../Core/Inc/ros/node_handle.h ../Core/Inc/ros/subscriber.h \
  ../Core/Inc/ros/service_server.h ../Core/Inc/ros/service_client.h \
  ../Core/Inc/STM32Hardware.h \
- ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32H7xx_hal.h \
+ ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h \
  ../Core/Inc/stm32h7xx_hal_conf.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_def.h \
@@ -41,11 +41,12 @@ ROS1/ros1.o: ../ROS1/ros1.cpp ../Core/Inc/ros.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
- ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32H7xx_hal_uart.h ../ROS1/ros1.h \
- ../Core/Inc/geometry_msgs/Twist.h ../Core/Inc/geometry_msgs/Vector3.h \
- ../Core/Inc/geometry_msgs/Pose.h ../Core/Inc/geometry_msgs/Point.h \
- ../Core/Inc/geometry_msgs/Quaternion.h ../Core/Inc/std_msgs/Int32.h \
- ../Core/Inc/std_msgs/Bool.h ../Chassis/chassis.h
+ ../ROS1/ros1.h ../Core/Inc/geometry_msgs/Twist.h \
+ ../Core/Inc/geometry_msgs/Vector3.h ../Core/Inc/geometry_msgs/Pose.h \
+ ../Core/Inc/geometry_msgs/Point.h ../Core/Inc/geometry_msgs/Quaternion.h \
+ ../Core/Inc/std_msgs/Int32.h ../Core/Inc/std_msgs/Bool.h \
+ ../Chassis/chassis.h ../location/location.h ../Motor/DC_motor.h \
+ ../location/pathsensor.h
 ../Core/Inc/ros.h:
 ../Core/Inc/ros/node_handle.h:
 ../Core/Inc/std_msgs/Time.h:
@@ -61,7 +62,7 @@ ROS1/ros1.o: ../ROS1/ros1.cpp ../Core/Inc/ros.h \
 ../Core/Inc/ros/service_server.h:
 ../Core/Inc/ros/service_client.h:
 ../Core/Inc/STM32Hardware.h:
-../Drivers/STM32H7xx_HAL_Driver/Inc/stm32H7xx_hal.h:
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_def.h:
@@ -96,7 +97,6 @@ ROS1/ros1.o: ../ROS1/ros1.cpp ../Core/Inc/ros.h \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
-../Drivers/STM32H7xx_HAL_Driver/Inc/stm32H7xx_hal_uart.h:
 ../ROS1/ros1.h:
 ../Core/Inc/geometry_msgs/Twist.h:
 ../Core/Inc/geometry_msgs/Vector3.h:
@@ -106,3 +106,6 @@ ROS1/ros1.o: ../ROS1/ros1.cpp ../Core/Inc/ros.h \
 ../Core/Inc/std_msgs/Int32.h:
 ../Core/Inc/std_msgs/Bool.h:
 ../Chassis/chassis.h:
+../location/location.h:
+../Motor/DC_motor.h:
+../location/pathsensor.h:

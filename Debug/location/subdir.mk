@@ -5,19 +5,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../location/VL53.cpp \
 ../location/location.cpp \
 ../location/pathsensor.cpp \
 ../location/script.cpp 
 
 OBJS += \
-./location/VL53.o \
 ./location/location.o \
 ./location/pathsensor.o \
 ./location/script.o 
 
 CPP_DEPS += \
-./location/VL53.d \
 ./location/location.d \
 ./location/pathsensor.d \
 ./location/script.d 
@@ -30,7 +27,7 @@ location/%.o location/%.su location/%.cyclo: ../location/%.cpp location/subdir.m
 clean: clean-location
 
 clean-location:
-	-$(RM) ./location/VL53.cyclo ./location/VL53.d ./location/VL53.o ./location/VL53.su ./location/location.cyclo ./location/location.d ./location/location.o ./location/location.su ./location/pathsensor.cyclo ./location/pathsensor.d ./location/pathsensor.o ./location/pathsensor.su ./location/script.cyclo ./location/script.d ./location/script.o ./location/script.su
+	-$(RM) ./location/location.cyclo ./location/location.d ./location/location.o ./location/location.su ./location/pathsensor.cyclo ./location/pathsensor.d ./location/pathsensor.o ./location/pathsensor.su ./location/script.cyclo ./location/script.d ./location/script.o ./location/script.su
 
 .PHONY: clean-location
 

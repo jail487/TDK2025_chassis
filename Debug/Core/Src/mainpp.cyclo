@@ -1,5 +1,7 @@
-../Core/Src/mainpp.cpp:48:6:void setup()	1
-../Core/Src/mainpp.cpp:62:6:void loop()	1
-../Core/Src/mainpp.cpp:68:6:void main_function()	1
-../Core/Src/mainpp.cpp:83:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	3
-../Core/Src/mainpp.cpp:102:6:void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef*)	3
+../Core/Src/mainpp.cpp:60:6:void setup()	2
+../Core/Src/mainpp.cpp:95:6:void loop()	1
+../Core/Src/mainpp.cpp:103:6:void main_function()	2
+../Core/Src/mainpp.cpp:121:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	3
+../Core/Src/mainpp.cpp:168:6:void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef*)	3
+../Core/Src/mainpp.cpp:178:6:void HAL_UART_TxCpltCallback(UART_HandleTypeDef*)	2
+../Core/Src/mainpp.cpp:188:6:void HAL_GPIO_EXTI_Callback(uint16_t)	3

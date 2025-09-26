@@ -40,6 +40,9 @@ static int ROS_FREQUENCY_SpeedCmd = 0;
 extern int path_dir;
 
 extern int count;
+int ttest = 0;
+
+
 
 
 
@@ -91,12 +94,12 @@ void setup(){
 
 void loop(void)
 {
-
 	stage_1();
     stage_2();
+	stage_3();
 }
 
-int ttest = 1;
+
 void main_function(){
 	setup();
 	while(1){
@@ -178,6 +181,9 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 		//處理接收到的資料
 	}
 }
+
+
+
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 		switch (GPIO_Pin) {

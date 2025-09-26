@@ -1,6 +1,22 @@
-../Motor/DC_motor.h:26:2:DC_motor::DC_motor(TIM_HandleTypeDef*, GPIO_TypeDef*, uint16_t, TIM_HandleTypeDef*, uint32_t, float, float, bool)	32	static
-../location/VL53.h:15:5:VL53L0X::VL53L0X(GPIO_TypeDef*, uint16_t, int)	24	static
-../Lifter/lifter.cpp:27:6:void lifter_setup()	8	static
-../Lifter/lifter.cpp:37:6:void lifter_measuredistance()	8	static
-../Lifter/lifter.cpp:40:1:void __static_initialization_and_destruction_0()	24	static
-../Lifter/lifter.cpp:40:1:cpp)	8	static
+../Lifter/../Drivers/VL53L0X_Class/VL53L0X_Class.h:145:10:bool VL53L0X_Enhanced::IsInitialized() const	16	static
+../Lifter/../Drivers/VL53L0X_Class/VL53L0X_Class.h:179:14:uint16_t VL53L0X_Enhanced::GetLastDistance() const	16	static
+../Lifter/../Drivers/VL53L0X_Class/VL53L0X_Class.h:191:10:bool VL53L0X_Enhanced::IsLastMeasurementValid() const	16	static
+../Motor/DC_motor.h:28:2:DC_motor::DC_motor(TIM_HandleTypeDef*, GPIO_TypeDef*, uint16_t, TIM_HandleTypeDef*, uint32_t, float, float, bool)	32	static
+../Lifter/lifter.cpp:33:6:bool testI2CConnection(uint8_t)	24	static
+../Lifter/lifter.cpp:39:5:int testI2CBus()	16	static
+../Lifter/lifter.cpp:56:6:void scanI2CBus()	16	static
+../Lifter/lifter.cpp:88:6:void lifterSetup()	8	static
+../Lifter/lifter.cpp:184:6:void measureDistance()	8	static
+../Lifter/lifter.cpp:199:6:void testSensors()	8	static
+../Lifter/lifter.cpp:209:6:void lifterMove(int, bool, bool)	16	static
+../Lifter/lifter.cpp:240:6:void lifterRun()	8	static
+../Lifter/lifter.cpp:308:6:void setHeight(int, int)	16	static
+../Lifter/lifter.cpp:319:10:uint16_t getLifterPosition(int)	16	static
+../Lifter/lifter.cpp:336:6:bool areLifterSensorsReady()	8	static
+../Lifter/lifter.cpp:345:6:bool calibrateLifterSensors(uint16_t)	24	static
+../Lifter/lifter.cpp:371:6:void printLifterStatus()	8	static
+../Lifter/lifter.cpp:389:6:void testBothSensors()	8	static
+../Lifter/lifter.cpp:421:1:void __static_initialization_and_destruction_0()	24	static
+../Lifter/lifter.cpp:421:1:void __static_initialization_and_destruction_1()	8	static
+../Lifter/lifter.cpp:421:1:cpp)	8	static
+../Lifter/lifter.cpp:421:1:cpp)	8	static

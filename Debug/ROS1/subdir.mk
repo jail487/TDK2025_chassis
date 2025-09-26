@@ -5,13 +5,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../ROS1/ros1.cpp 
+../ROS1/ros1.cpp \
+../ROS1/ros_test_minimal.cpp 
 
 OBJS += \
-./ROS1/ros1.o 
+./ROS1/ros1.o \
+./ROS1/ros_test_minimal.o 
 
 CPP_DEPS += \
-./ROS1/ros1.d 
+./ROS1/ros1.d \
+./ROS1/ros_test_minimal.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -21,7 +24,7 @@ ROS1/%.o ROS1/%.su ROS1/%.cyclo: ../ROS1/%.cpp ROS1/subdir.mk
 clean: clean-ROS1
 
 clean-ROS1:
-	-$(RM) ./ROS1/ros1.cyclo ./ROS1/ros1.d ./ROS1/ros1.o ./ROS1/ros1.su
+	-$(RM) ./ROS1/ros1.cyclo ./ROS1/ros1.d ./ROS1/ros1.o ./ROS1/ros1.su ./ROS1/ros_test_minimal.cyclo ./ROS1/ros_test_minimal.d ./ROS1/ros_test_minimal.o ./ROS1/ros_test_minimal.su
 
 .PHONY: clean-ROS1
 

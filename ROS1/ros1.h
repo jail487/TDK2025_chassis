@@ -26,7 +26,7 @@ namespace ROS1 {
 
 
     // STM Subscribers
-    void callback_Chassis(const geometry_msgs::Twist &msg);
+    void callback_Xoffset(const std_msgs::Int32 &msg);
     void callback_missonFinish(const std_msgs::Bool &msg);
     void callback_coffeeTable(const std_msgs::Int32 &msg);
     void callback_CupColor(const std_msgs::Int32 &msg);
